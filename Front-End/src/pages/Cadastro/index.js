@@ -47,63 +47,43 @@ export default function Cadastro() {
         const cpfNumeros = cpf.replace(/\D/g, '');
         const senhasSaoIguais = validarSenhas(senha, confSenha);
         const emailsSaoIguaisEValidos = email === confEmail && emailValido;
-
-        console.log("CPF:", cpfNumeros.length);
-        console.log("Email válido:", emailValido);
-        console.log("Senhas são iguais?", senhasSaoIguais);
-        console.log("E-mails são iguais e válidos?", emailsSaoIguaisEValidos);
-
-        if (cpfNumeros.length === 11) {
-            setTexto('Cpf inválido!');
+    
+        if (cpfNumeros.length !== 11 || !emailValido || !senhasSaoIguais || !emailsSaoIguaisEValidos) {
             mostrarModal();
+            return;
         }
-        if (!emailValido) {
-            setTexto('Email inválido!');
+    
+        try {
+            let privilegio = 'normal';
+            let body = {
+                cpf: cpfNumeros,
+                nome: nome,
+                email: email,
+                senha: senha,
+                privilegio: privilegio
+            };
+    
+            console.log('Enviando requisição com body:', body);
+
+            const r = await fetch('http://localhost:8080/auth/registrar', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJlY29tbWVyY2UiLCJzdWIiOiJ0ZXN0ZUBnbWFpbC5jb20iLCJleHAiOjE3MDAyODE2OTIsInByaXZpbGVnaW8iOiJBRE1JTiIsInVzdWFyaW9JZCI6ImIxNzM5NTg2LWFjYjgtNDFkNy05N2I0LWUzYjBlNzM4MDliMyJ9.n5-R0FudvbrAL0sjnEjoyIebNOkZwhUE9TQMuQcxNbk'
+                },
+                body,
+            })
+    
+            console.log('Resposta da requisição:', r);
+            navigate("/login");
+        } catch (error) {
+            console.error('Erro ao cadastrar usuário:', error);
+            setTexto('Ocorreu um erro ao cadastrar o usuário!');
+            console.error('Erro na chamada à API', error);
             mostrarModal();
-        }
-        if (!senhasSaoIguais) {
-            setTexto('Senha não coincidem!');
-            mostrarModal();
-        }
-
-        if (cpfNumeros.length === 11 && emailValido && senhasSaoIguais && emailsSaoIguaisEValidos) {
-            try {
-                let privilegio = 'normal';
-                let body = {
-                    nome: nome,
-                    cpf: cpfNumeros,
-                    email: email,
-                    senha: senha,
-                    privilegio: privilegio
-                };
-
-                console.log('Enviando requisição com body:', body);
-
-                const response = await api.post('/usuario/', body);
-                console.log('Resposta da requisição:', response);
-                navigate("/login")
-
-            } catch (error) {
-                console.error('Erro ao cadastrar usuário:', error);
-                setTexto('Ocorreu um erro ao cadastrar o usuário!');
-                mostrarModal();
-            }
-        } else {
-            if (nome === "" || cpf === "" || email === "" || senha === "") {
-                setTexto('Preencha todos os campos corretamente!');
-                mostrarModal();
-            } else if (!cpfValdio) {
-                setTexto('Cpf inválido!');
-                mostrarModal();
-            } else if (!emailValido) {
-                setTexto('Email inválido!');
-                mostrarModal();
-            } else if (!senhasSaoIguais) {
-                setTexto('Senha não coincidem!');
-                mostrarModal();
-            }
         }
     };
+    
+    
 
 
     const formatarCpf = (value) => {

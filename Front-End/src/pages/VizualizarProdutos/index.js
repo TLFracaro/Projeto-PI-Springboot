@@ -9,14 +9,14 @@ import { useEffect, useState } from "react";
 
 export default function VizualizarProdutos() {
     const location = useLocation();
-    const sku = location.state || {};
+    const produto_id = location.state || {};
     const [produto, setProduto] = useState({});
     const [imagensBase64, setImagemBase64] = useState([]);
 
     useEffect(() => {
         async function fetchData() {
             try {
-                let r = await api.get(`/produto/${sku}`);
+                let r = await api.get(`/produto/${produto_id}`);
                 setProduto(r.data);
 
                 const imagensBase64 = r.data.imagens.map((imagem) => {
@@ -32,7 +32,7 @@ export default function VizualizarProdutos() {
             }
         }
         fetchData();
-    }, [sku]);
+    }, [produto_id]);
 
     const calcularGrid = () => {
         const numeroDeImagens = imagensBase64.length;
@@ -101,7 +101,7 @@ export default function VizualizarProdutos() {
                             <h4>Marca:⠀<p>{produto.item?.marca}</p></h4>
                             <h4>Preço:⠀<p>{produto.item?.preco}</p></h4>
                             <h4>Descrição do produto:⠀<p>{produto.item?.descricao}</p></h4>
-                            <h4>SKU:⠀<p>{produto.item?.sku}</p></h4>
+                            <h4>produto_id:⠀<p>{produto.item?.produto_id}</p></h4>
                             <h4>Localização no estoque:⠀<p>{produto.item?.loc_estoque}</p></h4>
                             <h4>Data de inclusão:⠀<p>{dataFormatada}</p></h4>
                             <div class="variacoes">

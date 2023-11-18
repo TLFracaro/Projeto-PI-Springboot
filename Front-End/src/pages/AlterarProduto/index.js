@@ -13,7 +13,7 @@ export default function AlterarProduto() {
     const [marca, setMarca] = useState('');
     const [preco, setPreco] = useState(0);
     const [descricao, setDescricao] = useState(''); 
-    const [sku, setSku] = useState('');
+    const [produto_id, setProduto_id] = useState('');
     const [locEstoque, setLocEstoque] = useState('');
     const [peso, setPeso] = useState(0);
     const [images, setImages] = useState([]);
@@ -27,17 +27,17 @@ export default function AlterarProduto() {
     ]);
 
     const location = useLocation();
-    const skuRecebido = location.state || ('');
+    const produto_idRecebido = location.state || ('');
 
     useEffect(() => {
-        const skuFromUrl = location.pathname.split('/').pop();
-        buscarDados(skuFromUrl);
+        const produto_idFromUrl = location.pathname.split('/').pop();
+        buscarDados(produto_idFromUrl);
       }, [location.pathname]);
 
-    async function buscarDados(sku) {
+    async function buscarDados(produto_id) {
         try {
-            const resposta = await api.get(`/produto/${skuRecebido}`);
-            setSku(sku);
+            const resposta = await api.get(`/produto/${produto_idRecebido}`);
+            setProduto_id(produto_id);
             setNomeProduto(resposta.nome);
             setCategoria(resposta.categoria);
             setMarca(resposta.marca);
@@ -48,12 +48,12 @@ export default function AlterarProduto() {
     
             setImages(resposta.imagens.map(imagem => ({
                 id: imagem.id,
-                item_sku: sku,
+                item_produto_id: produto_id,
                 imagem_url: imagem.url
             })));
             setVariacoes(resposta.variacao.map(variacao => ({
                 id: variacao.id,
-                item_sku: sku,
+                item_produto_id: produto_id,
                 tamanho: variacao.tamanho,
                 cor: variacao.cor,
                 quantidade: variacao.quantidade
@@ -72,7 +72,7 @@ export default function AlterarProduto() {
             const imagensLimitadas = images.slice(0, 10);
             const body = {
                 item: {
-                    sku: sku,
+                    produto_id: produto_id,
                     nome: nomeProduto,
                     categoria: categoria,
                     marca: marca,
@@ -173,8 +173,8 @@ export default function AlterarProduto() {
                             <label htmlFor="descricao">Descrição:*</label>
                             <input id="descricao" type="text" name="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)}></input>
 
-                            <label htmlFor="sku">SKU:*</label>
-                            <input id="sku" type="text" name="sku" value={sku} onChange={(e) => setSku(e.target.value)}></input>
+                            <label htmlFor="produto_id">produto_id:*</label>
+                            <input id="produto_id" type="text" name="produto_id" value={produto_id} onChange={(e) => setProduto_id(e.target.value)}></input>
 
                             <label htmlFor="locEstoque">Locação de estoque:</label>
                             <input id="locEstoque" type="text" name="locEstoque" value={locEstoque} onChange={(e) => setLocEstoque(e.target.value)}></input>

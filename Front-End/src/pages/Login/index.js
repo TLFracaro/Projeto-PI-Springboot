@@ -38,7 +38,14 @@ export default function Login() {
                 email: email,
                 senha: senha,
             };
-            const r = await api.post(`/login`, body);
+
+            const r = await fetch('http://localhost:8080/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJlY29tbWVyY2UiLCJzdWIiOiJ0ZXN0ZUBnbWFpbC5jb20iLCJleHAiOjE3MDAyODE2OTIsInByaXZpbGVnaW8iOiJBRE1JTiIsInVzdWFyaW9JZCI6ImIxNzM5NTg2LWFjYjgtNDFkNy05N2I0LWUzYjBlNzM4MDliMyJ9.n5-R0FudvbrAL0sjnEjoyIebNOkZwhUE9TQMuQcxNbk'
+                },
+                body,
+            })
 
             console.log('Resposta da requisição:', r.data);
 

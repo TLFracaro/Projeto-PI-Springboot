@@ -14,7 +14,7 @@ export default function Produtos() {
     const [termoPesquisa, setTermoPesquisa] = useState('');
     const [texto, setTexto] = useState('');
     const [modalAberto, setModalAberto] = useState(false);
-    const [sku, setSku] = useState("")
+    const [produto_id, setProduto_id] = useState("")
     const navigate = useNavigate();
 
     const caixaDeDialogo = useRef(null);
@@ -59,9 +59,15 @@ export default function Produtos() {
     async function excluirProduto() {
         if (produtoToDelete) {
             try {
-                await api.delete(`/produto/${produtoToDelete.sku}`);
+                const r = await fetch(`http://localhost:8080/produto?${produtoToDelete.produto_id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJlY29tbWVyY2UiLCJzdWIiOiJ0ZXN0ZUBnbWFpbC5jb20iLCJleHAiOjE3MDAyODE2OTIsInByaXZpbGVnaW8iOiJBRE1JTiIsInVzdWFyaW9JZCI6ImIxNzM5NTg2LWFjYjgtNDFkNy05N2I0LWUzYjBlNzM4MDliMyJ9.n5-R0FudvbrAL0sjnEjoyIebNOkZwhUE9TQMuQcxNbk'
+                    },
+                })
                 listarProduto();
                 closeConfirmation();
+
             } catch (error) {
                 console.error('Erro ao excluir produto:', error);
                 setTexto('Ocorreu um erro ao excluir o produto!');
@@ -71,15 +77,20 @@ export default function Produtos() {
     }
 
     async function vizualizarproduto(produto) {
-        navigate("/vizualizarprodutos", { state: produto.sku });
+        navigate("/vizualizarprodutos", { state: produto.produto_id });
     }
-    
+
     async function alterarproduto(produto) {
-        navigate("/alterarproduto", produto.sku);
+        navigate("/alterarproduto", produto.produto_id);
     }
 
     async function listarProduto() {
-        let r = await api.get('/produto/listar/');
+        const r = await fetch(`http://localhost:8080/produto/todos`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJlY29tbWVyY2UiLCJzdWIiOiJ0ZXN0ZUBnbWFpbC5jb20iLCJleHAiOjE3MDAyODE2OTIsInByaXZpbGVnaW8iOiJBRE1JTiIsInVzdWFyaW9JZCI6ImIxNzM5NTg2LWFjYjgtNDFkNy05N2I0LWUzYjBlNzM4MDliMyJ9.n5-R0FudvbrAL0sjnEjoyIebNOkZwhUE9TQMuQcxNbk'
+                    },
+                })
         let produtos = r.data;
 
         setProdutos(produtos);
@@ -154,7 +165,7 @@ export default function Produtos() {
                                     <th>Nome do produto</th>
                                     <th>Categoria</th>
                                     <th>Preço</th>
-                                    <th>SKU</th>
+                                    <th>produto_id</th>
                                     <th></th>
                                 </tr>
                                 {filtrarProdutos().map((produto) => (
@@ -162,7 +173,7 @@ export default function Produtos() {
                                         <td class='primeiro'>{produto.nome}</td>
                                         <td>{produto.categoria}</td>
                                         <td>R$ {produto.preco}</td>
-                                        <td>{produto.sku}</td>
+                                        <td>{produto.produto_id}</td>
                                         <td class="final"><button onClick={() => vizualizarproduto(produto)}>
                                             <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path
@@ -174,7 +185,7 @@ export default function Produtos() {
                                             </svg>
                                         </button>
 
-                                            <button onClick={() => {alterarproduto(produto)}}>
+                                            <button onClick={() => { alterarproduto(produto) }}>
                                                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
                                                     <path

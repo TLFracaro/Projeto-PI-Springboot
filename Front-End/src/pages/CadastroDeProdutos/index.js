@@ -13,7 +13,7 @@ export default function CadastroDeProdutos() {
     const [marca, setMarca] = useState('');
     const [preco, setPreco] = useState(0);
     const [descricao, setDescricao] = useState('');
-    const [sku, setSku] = useState('');
+    const [produto_id, setProduto_id] = useState('');
     const [locEstoque, setLocEstoque] = useState('');
     const [peso, setPeso] = useState(0);
     const [images, setImages] = useState([]);
@@ -50,7 +50,7 @@ export default function CadastroDeProdutos() {
         try {
             e.preventDefault();
 
-            if (!nomeProduto || !categoria || !marca || !preco || !descricao || !locEstoque || !peso || !sku || variacoes.length === 0) {
+            if (!nomeProduto || !categoria || !marca || !preco || !descricao || !locEstoque || !peso || !produto_id || variacoes.length === 0) {
                 setTexto('Preencha todos os campos obrigatórios antes de enviar.');
                 mostrarModal();
                 return;
@@ -64,7 +64,7 @@ export default function CadastroDeProdutos() {
             formData.append('descricao', descricao);
             formData.append('loc_estoque', locEstoque);
             formData.append('peso', peso);
-            formData.append('sku', sku);
+            formData.append('produto_id', produto_id);
 
             variacoes.forEach((variacao, index) => {
                 formData.append(`variacoes[${index}][tamanho]`, variacao.tamanho);
@@ -78,13 +78,15 @@ export default function CadastroDeProdutos() {
                 }
             });
 
-            const resposta = await api.post('/produto', formData, {
+            const r = await fetch('http://localhost:8080/produto', {
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJlY29tbWVyY2UiLCJzdWIiOiJ0ZXN0ZUBnbWFpbC5jb20iLCJleHAiOjE3MDAyODE2OTIsInByaXZpbGVnaW8iOiJBRE1JTiIsInVzdWFyaW9JZCI6ImIxNzM5NTg2LWFjYjgtNDFkNy05N2I0LWUzYjBlNzM4MDliMyJ9.n5-R0FudvbrAL0sjnEjoyIebNOkZwhUE9TQMuQcxNbk'
                 },
-            });
+                body: formData,
+            })
 
-            console.log('Resposta do backend:', resposta.data);
+            console.log('Resposta do backend:', r.data);
         } catch (erro) {
             setTexto('Erro ao enviar para o banco de dados');
             mostrarModal();
@@ -204,8 +206,8 @@ export default function CadastroDeProdutos() {
                             <label htmlFor="descricao">Descrição:*</label>
                             <input id="descricao" type="text" name="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)}></input>
 
-                            <label htmlFor="sku">SKU:*</label>
-                            <input id="sku" type="text" name="sku" value={sku} onChange={(e) => setSku(e.target.value)}></input>
+                            <label htmlFor="produto_id">produto_id:*</label>
+                            <input id="produto_id" type="text" name="produto_id" value={produto_id} onChange={(e) => setProduto_id(e.target.value)}></input>
 
                             <label htmlFor="locEstoque">Locação de estoque:</label>
                             <input id="locEstoque" type="text" name="locEstoque" value={locEstoque} onChange={(e) => setLocEstoque(e.target.value)}></input>
