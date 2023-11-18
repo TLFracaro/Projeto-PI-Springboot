@@ -1,0 +1,25 @@
+.HomeEstilo {
+    * {
+        box-sizing: border-box;
+        margin: 0px;
+    }
+
+    overflow-x: hidden;
+
+    main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row;
+        margin: 30px;
+        height: 700px;
+
+    }
+
+    .chatBoot {
+        img {
+            position: fixed;
+            overflow: visible;
+        }
+    }
+}

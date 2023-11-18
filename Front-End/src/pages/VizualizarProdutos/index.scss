@@ -1,0 +1,161 @@
+.VizualizarProdutoEstilo {
+    * {
+        margin: 0px;
+        box-sizing: border-box;
+    }
+
+    main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        padding: 50px;
+        z-index: 1;
+
+        .mainConteudo {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: #E5E5E5;
+            border-radius: 50px;
+            padding: 50px;
+
+            .voltar {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                a {
+                    color: #000;
+                    text-decoration: none;
+                    font-size: 12px;
+                    font-family: 'K2D Extra Bold';
+
+                    h1 {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    svg {
+                        height: 32px;
+                    }
+                }
+            }
+
+            #titulo {
+                font-family: 'K2D Bold';
+                margin-left: 50px;
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+
+            .conteudo {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                height: 100%;
+                max-height: 572px;
+                width: 100%;
+
+                .imagens {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr); /* Defina o número de colunas desejado */
+                    grid-template-rows: repeat(auto-fill, minmax(100px, 1fr)); /* Linhas dinâmicas */
+                    gap: 10px; /* Espaçamento entre as imagens */
+                    align-items: center;
+                    background-color: white;
+                    padding: 20px;
+                    border-radius: 20px;
+                    width: 200px;
+                  
+                    img {
+                      width: 100%;
+                      height: auto;
+                      object-fit: cover;
+                      border-radius: 8px; /* Se desejar bordas arredondadas nas imagens */
+                    }
+                  }
+                  
+                  
+
+                .infos {
+                    width: 45%;
+
+                    h4 {
+                        display: flex;
+
+                        margin-bottom: 10px;
+                        font-family: 'K2D Extra Bold';
+
+                        p {
+                            color: #515151;
+                            font-family: 'K2D Light';
+                        }
+                    }
+
+                    .variacoes {
+                        h4 {
+                            margin-bottom: 0px;
+                        }
+
+                        table {
+                            font-family: 'K2D Medium';
+                            overflow-y: auto;
+                            overflow-x: auto;
+                            width: 100%;
+                            width: 100%;
+                            border-radius: 5px;
+                            border-collapse: separate;
+                            border-spacing: 0 10px;
+
+                            th {
+                                font-size: 18px;
+                                background-color: transparent;
+                                height: 18px;
+                            }
+
+                            .Conteudo {
+                                width: 100%;
+                                flex-direction: row;
+                                background-color: #fff;
+                                color: black;
+                                font-size: 16px;
+                                font-family: 'K2D Medium';
+                                text-align: center;
+                                padding: 30px;
+                                height: 40px;
+
+                                td {
+                                    height: 30px;
+                                }
+
+                                .primeiro {
+                                    border-top-left-radius: 20px;
+                                    border-bottom-left-radius: 20px;
+
+                                    img {
+                                        margin-right: 10px;
+                                    }
+                                }
+
+                                .final {
+                                    border-top-right-radius: 20px;
+                                    border-bottom-right-radius: 20px;
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
