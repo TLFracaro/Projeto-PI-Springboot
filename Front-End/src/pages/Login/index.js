@@ -1,11 +1,9 @@
-import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Cabecalho1 from '../../components/Cabecalho1';
 import Rodape from '../../components/Rodape';
 import '../../css/global.css';
 import './index.scss';
-import api from '../../api';
 
 export default function Login() {
     const [email, setEmail] = useState('');
