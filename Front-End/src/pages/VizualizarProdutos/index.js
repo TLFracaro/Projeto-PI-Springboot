@@ -13,14 +13,27 @@ export default function VizualizarProdutos() {
     const [produto, setProduto] = useState({});
     const [imagensBase64, setImagemBase64] = useState([]);
 
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJlY29tbWVyY2UiLCJzdWIiOiJ0ZXN0ZUBnbWFpbC5jb20iLCJleHAiOjE3MDAyODE2OTIsInByaXZpbGVnaW8iOiJBRE1JTiIsInVzdWFyaW9JZCI6ImIxNzM5NTg2LWFjYjgtNDFkNy05N2I0LWUzYjBlNzM4MDliMyJ9.n5-R0FudvbrAL0sjnEjoyIebNOkZwhUE9TQMuQcxNbk';
+
     useEffect(() => {
         async function fetchData() {
             try {
-                let r = await api.get(`/produto/${produto_id}`);
+
+                /* =============== AQUI =============== */
+
+                const r = await fetch(`http://localhost:8080/produto?produtoId=${produto_id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+
+                /* ==================================== */
+
                 setProduto(r.data);
 
                 const imagensBase64 = r.data.imagens.map((imagem) => {
-                    return imagem.imagem_base64; // Não é mais necessário converter
+                    return imagem.imagem_base64;
                 });
 
                 console.log('Dados do Produto:', r.data);
@@ -36,8 +49,8 @@ export default function VizualizarProdutos() {
 
     const calcularGrid = () => {
         const numeroDeImagens = imagensBase64.length;
-        const colunas = numeroDeImagens === 4 ? 2 : 1; // Defina a lógica para o número de colunas
-        const linhas = Math.ceil(numeroDeImagens / colunas); // Calcule o número de linhas
+        const colunas = numeroDeImagens === 4 ? 2 : 1; 
+        const linhas = Math.ceil(numeroDeImagens / colunas);
     
         return {
           gridTemplateColumns: `repeat(${colunas}, 1fr)`,
@@ -101,7 +114,6 @@ export default function VizualizarProdutos() {
                             <h4>Marca:⠀<p>{produto.item?.marca}</p></h4>
                             <h4>Preço:⠀<p>{produto.item?.preco}</p></h4>
                             <h4>Descrição do produto:⠀<p>{produto.item?.descricao}</p></h4>
-                            <h4>produto_id:⠀<p>{produto.item?.produto_id}</p></h4>
                             <h4>Localização no estoque:⠀<p>{produto.item?.loc_estoque}</p></h4>
                             <h4>Data de inclusão:⠀<p>{dataFormatada}</p></h4>
                             <div class="variacoes">

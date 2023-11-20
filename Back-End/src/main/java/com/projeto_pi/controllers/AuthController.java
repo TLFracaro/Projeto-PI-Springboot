@@ -17,7 +17,6 @@ import com.projeto_pi.services.AuthService;
 
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {

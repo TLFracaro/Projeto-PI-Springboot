@@ -1,9 +1,11 @@
+import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Cabecalho1 from '../../components/Cabecalho1';
 import Rodape from '../../components/Rodape';
 import '../../css/global.css';
 import './index.scss';
+import api from '../../api';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -32,20 +34,25 @@ export default function Login() {
 
     const login = async () => {
         try {
-            let body = {
-                email: email,
-                senha: senha,
-            };
+            const formData = new FormData();
+            formData.append('email', email);
+            formData.append('senha', senha);
+            
+            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0aGlua3NoYXJlYXBpIiwic3ViIjoidHVsaW9AZ21haWwuY29tIiwiZXhwIjoxNzAwNTEzMTM5LCJwcml2aWxlZ2lvIjoiQURNSU4iLCJ1c3VhcmlvSWQiOiJkZjczMDVkZC0yODJlLTRlZGQtYmE2Ny1hNzE0MTc4MWIxOGYifQ.TyRBIAE_UfJToAGNM2KfL2oPpnV_-Z9gINhQ1C7WaBs';
+
+            /* =============== AQUI =============== */
 
             const r = await fetch('http://localhost:8080/auth/login', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJlY29tbWVyY2UiLCJzdWIiOiJ0ZXN0ZUBnbWFpbC5jb20iLCJleHAiOjE3MDAyODE2OTIsInByaXZpbGVnaW8iOiJBRE1JTiIsInVzdWFyaW9JZCI6ImIxNzM5NTg2LWFjYjgtNDFkNy05N2I0LWUzYjBlNzM4MDliMyJ9.n5-R0FudvbrAL0sjnEjoyIebNOkZwhUE9TQMuQcxNbk'
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiVVNVQVJJTyIsIklzc3VlciI6ImVjb21tZXJjZSIsIlVzZXJuYW1lIjoidGVzdGUiLCJleHAiOjE2OTk5MDk5OTcsImlhdCI6MTY5OTkwOTk5N30.Ua4Hk1F5PulvwqlsZkja48PMO0NTbkUXp_xfYELka74'
                 },
-                body,
-            })
+                body: formData,
+            });
+  
+            /* ==================================== */
 
-            console.log('Resposta da requisição:', r.data);
+            const data = await r.json();
 
             if (r && r.data && r.data.nome && r.data.cpf && r.data.email && r.data.privilegio) {
                 const { nome, cpf, email, privilegio } = r.data;

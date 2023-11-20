@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ProjetoPiApplication<projeto_pi>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.projeto_pi.ProjetoPiApplication",
+            "projectName": "projeto_pi",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

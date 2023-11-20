@@ -47,43 +47,71 @@ export default function Cadastro() {
         const cpfNumeros = cpf.replace(/\D/g, '');
         const senhasSaoIguais = validarSenhas(senha, confSenha);
         const emailsSaoIguaisEValidos = email === confEmail && emailValido;
-    
-        if (cpfNumeros.length !== 11 || !emailValido || !senhasSaoIguais || !emailsSaoIguaisEValidos) {
-            mostrarModal();
-            return;
-        }
-    
-        try {
-            let privilegio = 'normal';
-            let body = {
-                cpf: cpfNumeros,
-                nome: nome,
-                email: email,
-                senha: senha,
-                privilegio: privilegio
-            };
-    
-            console.log('Enviando requisição com body:', body);
 
-            const r = await fetch('http://localhost:8080/auth/registrar', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJlY29tbWVyY2UiLCJzdWIiOiJ0ZXN0ZUBnbWFpbC5jb20iLCJleHAiOjE3MDAyODE2OTIsInByaXZpbGVnaW8iOiJBRE1JTiIsInVzdWFyaW9JZCI6ImIxNzM5NTg2LWFjYjgtNDFkNy05N2I0LWUzYjBlNzM4MDliMyJ9.n5-R0FudvbrAL0sjnEjoyIebNOkZwhUE9TQMuQcxNbk'
-                },
-                body,
-            })
-    
-            console.log('Resposta da requisição:', r);
-            navigate("/login");
-        } catch (error) {
-            console.error('Erro ao cadastrar usuário:', error);
-            setTexto('Ocorreu um erro ao cadastrar o usuário!');
-            console.error('Erro na chamada à API', error);
+        console.log("CPF:", cpfNumeros.length);
+        console.log("Email válido:", emailValido);
+        console.log("Senhas são iguais?", senhasSaoIguais);
+        console.log("E-mails são iguais e válidos?", emailsSaoIguaisEValidos);
+
+        if (cpfNumeros.length === 11) {
+            setTexto('Cpf inválido!');
             mostrarModal();
+        }
+        if (!emailValido) {
+            setTexto('Email inválido!');
+            mostrarModal();
+        }
+        if (!senhasSaoIguais) {
+            setTexto('Senha não coincidem!');
+            mostrarModal();
+        }
+
+        if (cpfNumeros.length === 11 && emailValido && senhasSaoIguais && emailsSaoIguaisEValidos) {
+            try {
+                const formData = new FormData();
+                let privilegio = 'normal';
+
+                formData.append('nome', 'ExemploNome');
+                formData.append('cpf', '12345678900');
+                formData.append('email', 'exemplo@email.com');
+                formData.append('senha', 'exemploSenha');
+                formData.append('privilegio', privilegio);
+
+                console.log('Enviando requisição com FormData:', formData);
+
+                /* =============== AQUI =============== */
+
+                const r = await fetch(`http://localhost:8080/auth/registrar`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiVVNVQVJJTyIsIklzc3VlciI6ImVjb21tZXJjZSIsIlVzZXJuYW1lIjoidGVzdGUiLCJleHAiOjE2OTk5MDk5OTcsImlhdCI6MTY5OTkwOTk5N30.Ua4Hk1F5PulvwqlsZkja48PMO0NTbkUXp_xfYELka74'
+                    },
+                    body: formData,
+                });
+
+                /* =================================== */
+
+            } catch (error) {
+                console.error('Erro ao cadastrar usuário:', error);
+                setTexto('Ocorreu um erro ao cadastrar o usuário!');
+                mostrarModal();
+            }
+        } else {
+            if (nome === "" || cpf === "" || email === "" || senha === "") {
+                setTexto('Preencha todos os campos corretamente!');
+                mostrarModal();
+            } else if (!cpfValdio) {
+                setTexto('Cpf inválido!');
+                mostrarModal();
+            } else if (!emailValido) {
+                setTexto('Email inválido!');
+                mostrarModal();
+            } else if (!senhasSaoIguais) {
+                setTexto('Senha não coincidem!');
+                mostrarModal();
+            }
         }
     };
-    
-    
 
 
     const formatarCpf = (value) => {
@@ -163,23 +191,23 @@ export default function Cadastro() {
                                 alt="Linha  separando caixas de texto do titulo"></img>
                         </div>
                         <form action="">
-                                <label for="">nome completo:</label>
-                                <input type="text" value={nome} onChange={e => setNome(e.target.value)} />
+                            <label for="">nome completo:</label>
+                            <input type="text" value={nome} onChange={e => setNome(e.target.value)} />
 
-                                <label for="">cpf:</label>
-                                <input type="text" value={cpf} onChange={identificarCpf} style={cpfValdio ? { border: '2px solid red' } : validarCpf(cpf) ? { border: '2px solid green' } : null} />
+                            <label for="">cpf:</label>
+                            <input type="text" value={cpf} onChange={identificarCpf} style={cpfValdio ? { border: '2px solid red' } : validarCpf(cpf) ? { border: '2px solid green' } : null} />
 
-                                <label>E-mail:</label>
-                                <input type="text" value={email} onChange={(e) => { setEmail(e.target.value); setEmailValido(validarEmail(e.target.value)); }} style={!email ? { border: 'none' } : emailValido ? { border: '2px solid green' } : { border: '2px solid red' }} />
+                            <label>E-mail:</label>
+                            <input type="text" value={email} onChange={(e) => { setEmail(e.target.value); setEmailValido(validarEmail(e.target.value)); }} style={!email ? { border: 'none' } : emailValido ? { border: '2px solid green' } : { border: '2px solid red' }} />
 
-                                <label>Confirmar E-mail:</label>
-                                <input type="text" value={confEmail} onChange={(e) => setConfEmail(e.target.value)} onBlur={() => { setEmailValido(email === confEmail && validarEmail(confEmail)); }} style={!confEmail ? { border: 'none' } : email === confEmail && emailValido ? { border: '2px solid green' } : { border: '2px solid red' }} />
+                            <label>Confirmar E-mail:</label>
+                            <input type="text" value={confEmail} onChange={(e) => setConfEmail(e.target.value)} onBlur={() => { setEmailValido(email === confEmail && validarEmail(confEmail)); }} style={!confEmail ? { border: 'none' } : email === confEmail && emailValido ? { border: '2px solid green' } : { border: '2px solid red' }} />
 
-                                <label>Senha:</label>
-                                <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} onBlur={() => { validarSenhasInput(senha, confSenha); }} style={!senha ? { border: 'none' } : senhasIguais ? { border: '2px solid green' } : { border: '2px solid red' }} />
+                            <label>Senha:</label>
+                            <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} onBlur={() => { validarSenhasInput(senha, confSenha); }} style={!senha ? { border: 'none' } : senhasIguais ? { border: '2px solid green' } : { border: '2px solid red' }} />
 
-                                <label>Confirmar Senha:</label>
-                                <input type="password" value={confSenha} onChange={(e) => setConfSenha(e.target.value)} onBlur={() => { validarSenhasInput(senha, confSenha); }} style={!confSenha ? { border: 'none' } : senhasIguais ? { border: '2px solid green' } : { border: '2px solid red' }} />
+                            <label>Confirmar Senha:</label>
+                            <input type="password" value={confSenha} onChange={(e) => setConfSenha(e.target.value)} onBlur={() => { validarSenhasInput(senha, confSenha); }} style={!confSenha ? { border: 'none' } : senhasIguais ? { border: '2px solid green' } : { border: '2px solid red' }} />
                             <button type="button" onClick={enviarCadastro}>Cadastrar-se</button>
                         </form>
                     </div>
