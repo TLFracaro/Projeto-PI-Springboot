@@ -1,6 +1,6 @@
 package com.projeto_pi.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.projeto_pi.enums.Privilegio;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,6 +9,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,23 +19,25 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.projeto_pi.enums.Privilegio;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    @Autowired
-    private SecurityFilter filter;
+    private final SecurityFilter filter;
+
+    public SecurityConfiguration(SecurityFilter filter) {
+        this.filter = filter;
+    }
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .cors(Customizer.withDefaults())
-                .csrf((csrf) -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/*").permitAll()
+                        .requestMatchers("/images/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/produto").hasRole(Privilegio.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/produto").hasRole(Privilegio.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/produto").hasRole(Privilegio.ADMIN.name())
@@ -46,9 +49,9 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*"); // Configura os domínios permitidos (ou use o seu domínio específico)
-        configuration.addAllowedMethod("*"); // Configura os métodos HTTP permitidos (GET, POST, PUT, etc.)
-        configuration.addAllowedHeader("*"); // Configura os cabeçalhos permitidos
+        configuration.addAllowedOrigin("*");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

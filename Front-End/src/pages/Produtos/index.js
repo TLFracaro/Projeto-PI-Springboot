@@ -94,14 +94,16 @@ export default function Produtos() {
 
         /* =============== AQUI =============== */
 
-        const r = await fetch('http://localhost:8080/produto/listar/', {
+        const r = await fetch('http://localhost:8080/produto/todos', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
             },
-        });
+        }).then(async response => {
+            console.log(await response.json());
+        }).catch(error => console.error(error));
 
-        const produtos = await r.json();
+        // const produtos = await r.json();
 
         /* ==================================== */
 

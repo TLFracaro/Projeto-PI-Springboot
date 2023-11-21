@@ -3,7 +3,6 @@ package com.projeto_pi.security;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -15,18 +14,22 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private TokenService service;
+    private final TokenService service;
 
-    @Autowired
-    private UsuarioRepository repository;
+    private final UsuarioRepository repository;
+
+    public SecurityFilter(TokenService service, UsuarioRepository repository) {
+        this.service = service;
+        this.repository = repository;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
             throws ServletException, IOException {
 
         String token = recoverToken(request);
@@ -34,14 +37,12 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (token != null) {
             repository
                     .findByEmail(service.validateToken(token))
-                    .ifPresentOrElse(usuario -> {
-                        SecurityContextHolder
-                                .getContext()
-                                .setAuthentication(new UsernamePasswordAuthenticationToken(
-                                        usuario.getEmail(),
-                                        usuario.getPassword(),
-                                        usuario.getAuthorities()));
-                    }, () -> {
+                    .ifPresentOrElse(usuario -> SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(new UsernamePasswordAuthenticationToken(
+                                    usuario.getEmail(),
+                                    usuario.getPassword(),
+                                    usuario.getAuthorities())), () -> {
                         throw new NoSuchElementException("Usuário não encontrado");
                     });
         }

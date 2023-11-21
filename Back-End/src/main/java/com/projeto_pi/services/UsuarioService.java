@@ -1,28 +1,28 @@
 package com.projeto_pi.services;
 
-import java.util.NoSuchElementException;
-import java.util.UUID;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.projeto_pi.dtos.UsuarioDto;
 import com.projeto_pi.models.Usuario;
 import com.projeto_pi.repositories.UsuarioRepository;
 import com.projeto_pi.utils.SecurityUtils;
-
 import jakarta.transaction.Transactional;
+import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Service
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository repository;
+    private final UsuarioRepository repository;
 
-    public Usuario selectOne(UUID usuarioId) throws Exception {
+    public UsuarioService(UsuarioRepository repository) {
+        this.repository = repository;
+    }
+
+    public Usuario selectOne(UUID usuarioId) {
 
         Usuario usuario = repository
                 .findById(usuarioId)
@@ -34,7 +34,7 @@ public class UsuarioService {
     }
 
     @Transactional
-    public Usuario update(UUID usuarioId, UsuarioDto dto) throws Exception {
+    public Usuario update(UUID usuarioId, UsuarioDto dto) {
 
         Usuario searchedUsuario = repository
                 .findById(usuarioId)
@@ -43,13 +43,6 @@ public class UsuarioService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (SecurityUtils.unauthorized(auth, searchedUsuario)) {
-
-            repository
-                    .findByEmailOrCpf(dto.email(), dto.cpf())
-                    .ifPresent(u -> {
-                        throw new IllegalArgumentException("Usuário já cadastrado");
-                    });
-
             Usuario usuario = new Usuario();
             BeanUtils.copyProperties(dto, usuario);
             usuario.setUsuarioId(usuarioId);

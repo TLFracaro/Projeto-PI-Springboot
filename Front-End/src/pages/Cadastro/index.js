@@ -68,26 +68,29 @@ export default function Cadastro() {
 
         if (cpfNumeros.length === 11 && emailValido && senhasSaoIguais && emailsSaoIguaisEValidos) {
             try {
-                const formData = new FormData();
-                let privilegio = 'normal';
+                let privilegio = 'USUARIO';
 
-                formData.append('nome', 'ExemploNome');
-                formData.append('cpf', '12345678900');
-                formData.append('email', 'exemplo@email.com');
-                formData.append('senha', 'exemploSenha');
-                formData.append('privilegio', privilegio);
+                console.log(cpfNumeros)
 
-                console.log('Enviando requisição com FormData:', formData);
+                const json = {
+                    nome: nome,
+                    cpf: cpfNumeros,
+                    email: email,
+                    senha: senha,
+                    privilegio: privilegio
+                }
 
                 /* =============== AQUI =============== */
 
                 const r = await fetch(`http://localhost:8080/auth/registrar`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiVVNVQVJJTyIsIklzc3VlciI6ImVjb21tZXJjZSIsIlVzZXJuYW1lIjoidGVzdGUiLCJleHAiOjE2OTk5MDk5OTcsImlhdCI6MTY5OTkwOTk5N30.Ua4Hk1F5PulvwqlsZkja48PMO0NTbkUXp_xfYELka74'
+                        'Content-type': 'application/json'
                     },
-                    body: formData,
-                });
+                    body: JSON.stringify(json),
+                }).then(async response => {
+                    console.log(await response.json());
+                }).catch(error => console.error(error));
 
                 /* =================================== */
 
@@ -97,19 +100,19 @@ export default function Cadastro() {
                 mostrarModal();
             }
         } else {
-            if (nome === "" || cpf === "" || email === "" || senha === "") {
-                setTexto('Preencha todos os campos corretamente!');
-                mostrarModal();
-            } else if (!cpfValdio) {
-                setTexto('Cpf inválido!');
-                mostrarModal();
-            } else if (!emailValido) {
-                setTexto('Email inválido!');
-                mostrarModal();
-            } else if (!senhasSaoIguais) {
-                setTexto('Senha não coincidem!');
-                mostrarModal();
-            }
+            // if (nome === "" || cpf === "" || email === "" || senha === "") {
+            //     setTexto('Preencha todos os campos corretamente!');
+            //     mostrarModal();
+            // } else if (!cpfValdio) {
+            //     setTexto('Cpf inválido!');
+            //     mostrarModal();
+            // } else if (!emailValido) {
+            //     setTexto('Email inválido!');
+            //     mostrarModal();
+            // } else if (!senhasSaoIguais) {
+            //     setTexto('Senha não coincidem!');
+            //     mostrarModal();
+            // }
         }
     };
 
@@ -218,4 +221,5 @@ export default function Cadastro() {
 
         </section>
     );
+    
 }

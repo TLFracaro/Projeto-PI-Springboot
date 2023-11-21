@@ -1,26 +1,29 @@
 package com.projeto_pi.services;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Base64;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.projeto_pi.dtos.ImagemDto;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ImagesService {
-
-    public String checkIfImageExist(String base64Img) {
+    public synchronized String checkIfImageExist(MultipartFile image) {
         try {
+
+            var hash = processImageHash(image);
 
             ObjectMapper mapper = new ObjectMapper();
 
@@ -33,103 +36,116 @@ public class ImagesService {
                 var entry = fields.next();
                 String value = entry.getValue().asText();
 
-                if (value.equals(base64Img.substring(0, 100))) {
+                if (value.equals(hash.get())) {
                     return entry.getKey();
                 }
             }
             return null;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String uploadImage(ImagemDto imagem) {
+    public synchronized String uploadImage(MultipartFile image) {
         try {
 
-            if (imagem.getBase64().contains("image_")) {
-                return new StringBuilder("http://127.0.0.1:8080/images/" + imagem.getBase64()).toString();
-            }
+            String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(image.getOriginalFilename()));
+            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
 
-            String filename = new StringBuilder("image_" + UUID.randomUUID() + imagem.getExtension()).toString();
+            String filename = image.getName() + UUID.randomUUID() + extension;
 
-            var task = processImageReference(filename, imagem);
+            var task = processImageReference(image, filename);
 
-            FileOutputStream output = new FileOutputStream(
-                    new File("src/main/resources/static/images/", filename));
+            FileOutputStream output = new FileOutputStream(new File("src/main/resources/static/images/", filename));
 
-            output.write(Base64.getDecoder().decode(imagem.getBase64()));
+            output.write(image.getBytes());
             output.close();
 
             task.get();
 
-            return new StringBuilder("http://127.0.0.1:8080/images/" + filename).toString();
-        }
-        catch (Exception e) {
+            return "http://localhost:8080/images/" + filename;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Async
-    private CompletableFuture<Void> processImageReference(String filename, ImagemDto imagem) {
+    protected CompletableFuture<Void> processImageReference(MultipartFile image, String filename) {
         try {
+            var task = processImageHash(image);
+
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-            JsonNode node = mapper.createObjectNode();
-            ((ObjectNode) node).put(filename, imagem.getBase64().substring(0, 100));
+            ObjectNode node = mapper.createObjectNode();
+            node.put(filename, task.get());
 
             File file = new File("src/main/resources/base64Img.json");
 
             JsonNode json = mapper.readTree(file);
 
-            ((ObjectNode) json).setAll((ObjectNode) node);
+            ((ObjectNode) json).setAll(node);
 
             ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
             writer.writeValue(file, json);
 
             return CompletableFuture.completedFuture(null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return CompletableFuture.failedFuture(e);
         }
     }
 
-    public Boolean deleteImage(String urlImageName) {
+    @Async
+    public CompletableFuture<String> processImageHash(MultipartFile image) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+            DigestInputStream dis = new DigestInputStream(image.getInputStream(), md);
+
+            while (dis.read() != -1) ;
+
+            byte[] hashBytes = md.digest();
+
+            dis.close();
+
+            StringBuilder builder = new StringBuilder();
+
+            for (byte b : hashBytes) {
+                builder.append(String.format("%02x", b));
+            }
+
+            return CompletableFuture.completedFuture(builder.toString());
+        } catch (Exception e) {
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    public synchronized Boolean deleteImage(String urlImageName) {
         try {
 
-            if (urlImageName == null || urlImageName.equals("")) {
-                throw new IllegalArgumentException("Não há um tipo válido na URL da imagem");
+            if (urlImageName == null || urlImageName.isEmpty()) {
+                return false;
             }
-
-            boolean condition = false;
 
             File file = new File(
-                    new StringBuilder("src/main/resources/static/images/" + urlImageName
-                            .substring(urlImageName.lastIndexOf("/") + 1))
-                            .toString());
+                    "src/main/resources/static/images/" + urlImageName
+                            .substring(urlImageName.lastIndexOf("/") + 1));
 
-            if (file.exists()) {
-                condition = file.delete();
-            }
-
-            return condition;
-        }
-        catch (Exception e) {
+            return file.exists() && file.delete();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Boolean deleteJsonReference(String urlImageName) {
+    public synchronized Boolean deleteJsonReference(String urlImageName) {
         try {
 
-            if (urlImageName == null || urlImageName.equals("")) {
-                throw new IllegalArgumentException("Não há um tipo válido na URL da imagem");
+            if (urlImageName == null || urlImageName.isEmpty()) {
+                return false;
             }
 
-            urlImageName = new StringBuilder(urlImageName
-                    .substring(urlImageName.lastIndexOf("/") + 1))
-                    .toString();
+            urlImageName = urlImageName
+                    .substring(urlImageName.lastIndexOf("/") + 1);
 
             ObjectMapper mapper = new ObjectMapper();
 
@@ -143,8 +159,7 @@ public class ImagesService {
             }
 
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -1,9 +1,11 @@
 package com.projeto_pi.services;
 
-import java.util.Optional;
-
+import com.projeto_pi.dtos.AuthDto;
+import com.projeto_pi.dtos.UsuarioDto;
+import com.projeto_pi.models.Usuario;
+import com.projeto_pi.repositories.UsuarioRepository;
+import com.projeto_pi.security.TokenService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,27 +14,28 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.projeto_pi.dtos.AuthDto;
-import com.projeto_pi.dtos.UsuarioDto;
-import com.projeto_pi.models.Usuario;
-import com.projeto_pi.repositories.UsuarioRepository;
-import com.projeto_pi.security.TokenService;
+import java.util.Optional;
 
 @Service
 public class AuthService implements UserDetailsService {
 
-    @Autowired
-    private UsuarioRepository repository;
+    private final UsuarioRepository repository;
 
-    @Autowired
-    private AuthenticationConfiguration configuration;
+    private final AuthenticationConfiguration configuration;
 
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
+
+    public AuthService(UsuarioRepository repository, AuthenticationConfiguration configuration, TokenService tokenService) {
+        this.repository = repository;
+        this.configuration = configuration;
+        this.tokenService = tokenService;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return repository.findByEmail(email).get();
+        return repository
+                .findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
     }
 
     public String login(AuthDto dto) throws Exception {
@@ -50,9 +53,9 @@ public class AuthService implements UserDetailsService {
         BeanUtils.copyProperties(dto, usuario);
         usuario.setSenha(new BCryptPasswordEncoder().encode(dto.senha()));
 
-        usuario = Optional.ofNullable(repository.save(usuario)).orElseThrow(() -> {
-            throw new RuntimeException("Não foi possivel efetuar o cadastro, tente novamente");
-        });
+        usuario = Optional
+                .of(repository.save(usuario))
+                .orElseThrow(() -> new RuntimeException("Não foi possivel efetuar o cadastro, tente novamente"));
 
         return login(new AuthDto(usuario.getEmail(), dto.senha()));
     }

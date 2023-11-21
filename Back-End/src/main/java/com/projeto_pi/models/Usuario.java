@@ -1,31 +1,22 @@
 package com.projeto_pi.models;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.projeto_pi.enums.Privilegio;
+import jakarta.persistence.*;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.projeto_pi.enums.Privilegio;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Data;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 @Data
 @Entity
 @Table(name = "usuario")
 public class Usuario implements UserDetails {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "usuario_id")
@@ -46,11 +37,12 @@ public class Usuario implements UserDetails {
     private String senha;
 
     @Column(name = "privilegio", nullable = false)
-    @JsonIgnore
     @Enumerated(EnumType.STRING)
+    @JsonIgnore
     private Privilegio privilegio;
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + privilegio.name()));
     }

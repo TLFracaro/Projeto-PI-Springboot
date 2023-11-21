@@ -1,44 +1,41 @@
 package com.projeto_pi.services;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.stereotype.Service;
-
 import com.projeto_pi.dtos.ProdutoDto;
 import com.projeto_pi.models.Imagem;
 import com.projeto_pi.models.Produto;
 import com.projeto_pi.models.Variacao;
 import com.projeto_pi.repositories.ImagemRepository;
 import com.projeto_pi.repositories.ProdutoRepository;
-
 import jakarta.transaction.Transactional;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @Service
 public class ProdutoService {
 
-    @Autowired
-    private ProdutoRepository produtoRepository;
+    private final ProdutoRepository produtoRepository;
 
-    @Autowired
-    private ImagemRepository imagemRepository;
+    private final ImagemRepository imagemRepository;
 
-    @Autowired
-    private ImagesService service;
+    private final ImagesService service;
 
-    public List<Produto> selectAll() throws Exception {
+    public ProdutoService(ProdutoRepository produtoRepository, ImagemRepository imagemRepository, ImagesService service) {
+        this.produtoRepository = produtoRepository;
+        this.imagemRepository = imagemRepository;
+        this.service = service;
+    }
+
+    public List<Produto> selectAll() {
         var produtos = produtoRepository.findAll();
         if (produtos.isEmpty()) {
             throw new NoSuchElementException("Não há produtos cadastrados");
@@ -46,44 +43,25 @@ public class ProdutoService {
         return produtos;
     }
 
-    public Produto selectOne(UUID produtoId) throws Exception {
+    public Produto selectOne(UUID produtoId) {
         return produtoRepository
                 .findById(produtoId)
                 .orElseThrow(() -> new NoSuchElementException("Produto não encontrado"));
     }
 
     @Transactional
-    public Produto insert(ProdutoDto dto) throws Exception {
+    public Produto insert(ProdutoDto dto, MultipartFile[] imagens) throws Exception {
         Produto produto = new Produto();
         BeanUtils.copyProperties(dto, produto);
 
         produtoRepository.findOne(Example.of(produto, ExampleMatcher
-                .matching()
-                .withIgnorePaths("produto_id", "variacoes", "imagens")))
+                        .matching()
+                        .withIgnorePaths("produto_id", "variacoes", "imagens")))
                 .ifPresent(p -> {
                     throw new IllegalArgumentException("Produto já cadastrado");
                 });
 
-        ExecutorService executor = Executors.newFixedThreadPool(2);
-
-        var threadImagens = executor.submit(() -> dto.imagens()
-                .stream()
-                .map(imagem -> {
-                    String str = service.checkIfImageExist(imagem.getBase64());
-                    if (str != null) {
-                        imagem.setBase64(str);
-                    }
-                    return imagem;
-                })
-                .map(imagem -> {
-                    Imagem img = new Imagem();
-                    img.setProduto(produto);
-                    img.setUrl(service.uploadImage(imagem));
-                    return img;
-                })
-                .collect(Collectors.toList()));
-
-        var threadVariacoes = executor.submit(() -> dto.variacoes()
+        var future = CompletableFuture.supplyAsync(() -> dto.variacoes()
                 .stream()
                 .map(variacaoDto -> {
                     Variacao variacao = new Variacao();
@@ -93,16 +71,25 @@ public class ProdutoService {
                 })
                 .collect(Collectors.toList()));
 
-        produto.setImagens(threadImagens.get());
-        produto.setVariacoes(threadVariacoes.get());
+        List<Imagem> imgs = new ArrayList<>();
 
-        executor.shutdown();
+        Arrays.stream(imagens)
+                .forEach(imagem -> {
+                    String filename = service.checkIfImageExist(imagem);
+                    Imagem img = new Imagem();
+                    img.setProduto(produto);
+                    img.setUrl(filename == null ? service.uploadImage(imagem) : filename);
+                    imgs.add(img);
+                });
+
+        produto.setImagens(imgs);
+        produto.setVariacoes(future.get());
 
         return produtoRepository.save(produto);
     }
 
     @Transactional
-    public Produto update(UUID produtoId, ProdutoDto dto) throws Exception {
+    public Produto update(UUID produtoId, ProdutoDto dto, MultipartFile[] imagens) throws Exception {
 
         Produto produto = produtoRepository
                 .findById(produtoId)
@@ -110,26 +97,7 @@ public class ProdutoService {
 
         BeanUtils.copyProperties(dto, produto);
 
-        ExecutorService executor = Executors.newFixedThreadPool(2);
-
-        var threadImagens = executor.submit(() -> dto.imagens()
-                .stream()
-                .map(imagem -> {
-                    String str = service.checkIfImageExist(imagem.getBase64());
-                    if (str != null) {
-                        imagem.setBase64(str);
-                    }
-                    return imagem;
-                })
-                .map(imagem -> {
-                    Imagem img = new Imagem();
-                    img.setProduto(produto);
-                    img.setUrl(service.uploadImage(imagem));
-                    return img;
-                })
-                .collect(Collectors.toList()));
-
-        var threadVariacoes = executor.submit(() -> dto.variacoes()
+        var future = CompletableFuture.supplyAsync(() -> dto.variacoes()
                 .stream()
                 .map(variacaoDto -> {
                     Variacao variacao = new Variacao();
@@ -140,18 +108,24 @@ public class ProdutoService {
                 .collect(Collectors.toList()));
 
         Set<Imagem> imagemSet = new HashSet<>(produto.getImagens());
+
+        Arrays.stream(imagens)
+                .forEach(imagem -> {
+                    String filename = service.checkIfImageExist(imagem);
+                    Imagem img = new Imagem();
+                    img.setUrl(filename == null ? service.uploadImage(imagem) : filename);
+                    imagemSet.add(img);
+                });
+
         Set<Variacao> variacaoSet = new HashSet<>(produto.getVariacoes());
 
-        imagemSet.addAll(threadImagens.get());
-        variacaoSet.addAll(threadVariacoes.get());
+        variacaoSet.addAll(future.get());
 
         produto.getImagens().clear();
         produto.getImagens().addAll(imagemSet);
-        
+
         produto.getVariacoes().clear();
         produto.getVariacoes().addAll(variacaoSet);
-
-        executor.shutdown();
 
         return produtoRepository.save(produto);
     }
@@ -160,44 +134,44 @@ public class ProdutoService {
     public Boolean delete(UUID produtoId) throws Exception {
         produtoRepository.findById(produtoId).ifPresentOrElse(produto -> {
 
-            produtoRepository.deleteById(produtoId);
-            imagemRepository.deleteAllByProdutoId(produtoId);
+                    produtoRepository.deleteById(produtoId);
+                    imagemRepository.deleteAllByProdutoId(produtoId);
 
-            produto.getImagens().forEach(imagem -> {
+                    produto.getImagens().forEach(imagem -> {
 
-                Imagem imagemToExample = new Imagem();
-                imagemToExample.setUrl(imagem.getUrl());
+                        Imagem imagemToExample = new Imagem();
+                        imagemToExample.setUrl(imagem.getUrl());
 
-                Long count = imagemRepository.count(Example.of(imagemToExample, ExampleMatcher
-                        .matching()
-                        .withIgnorePaths("imagem_id", "produto_id")
-                        .withMatcher("url", ExampleMatcher.GenericPropertyMatcher
-                                .of(ExampleMatcher.StringMatcher.EXACT))));
+                        long count = imagemRepository.count(Example.of(imagemToExample, ExampleMatcher
+                                .matching()
+                                .withIgnorePaths("imagem_id", "produto_id")
+                                .withMatcher("url", ExampleMatcher.GenericPropertyMatcher
+                                        .of(ExampleMatcher.StringMatcher.EXACT))));
 
-                if (count == 0) {
-                    try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
+                        if (count == 0) {
+                            try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
 
-                        List<Callable<Boolean>> callables = new ArrayList<>();
+                                List<Callable<Boolean>> callables = new ArrayList<>();
 
-                        callables.add(() -> service.deleteJsonReference(imagem.getUrl()));
-                        callables.add(() -> service.deleteImage(imagem.getUrl()));
+                                callables.add(() -> service.deleteJsonReference(imagem.getUrl()));
+                                callables.add(() -> service.deleteImage(imagem.getUrl()));
 
-                        var results = executor.invokeAll(callables);
+                                var results = executor.invokeAll(callables);
 
-                        results.forEach(result -> {
-                            try {
-                                result.get();
+                                results.forEach(result -> {
+                                    try {
+                                        result.get();
+                                    } catch (Exception e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                });
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
-                        });
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+                        }
 
-            });
-        },
+                    });
+                },
                 () -> {
                     throw new NoSuchElementException("Produto não encontrado");
                 });

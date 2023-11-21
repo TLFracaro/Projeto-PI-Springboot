@@ -34,10 +34,12 @@ export default function Login() {
 
     const login = async () => {
         try {
-            const formData = new FormData();
-            formData.append('email', email);
-            formData.append('senha', senha);
-            
+
+            const json = {
+                email: email,
+                senha: senha
+            }
+
             const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0aGlua3NoYXJlYXBpIiwic3ViIjoidHVsaW9AZ21haWwuY29tIiwiZXhwIjoxNzAwNTEzMTM5LCJwcml2aWxlZ2lvIjoiQURNSU4iLCJ1c3VhcmlvSWQiOiJkZjczMDVkZC0yODJlLTRlZGQtYmE2Ny1hNzE0MTc4MWIxOGYifQ.TyRBIAE_UfJToAGNM2KfL2oPpnV_-Z9gINhQ1C7WaBs';
 
             /* =============== AQUI =============== */
@@ -45,11 +47,13 @@ export default function Login() {
             const r = await fetch('http://localhost:8080/auth/login', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiVVNVQVJJTyIsIklzc3VlciI6ImVjb21tZXJjZSIsIlVzZXJuYW1lIjoidGVzdGUiLCJleHAiOjE2OTk5MDk5OTcsImlhdCI6MTY5OTkwOTk5N30.Ua4Hk1F5PulvwqlsZkja48PMO0NTbkUXp_xfYELka74'
+                    'Content-type': 'application/json'
                 },
-                body: formData,
-            });
-  
+                body: JSON.stringify(json),
+            }).then(async response => {
+                console.log(await response.json());
+            }).catch(error => console.error(error));
+
             /* ==================================== */
 
             const data = await r.json();
