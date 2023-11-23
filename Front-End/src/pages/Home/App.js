@@ -4,7 +4,6 @@ import Cabecalho1 from "../../components/Cabecalho1";
 import Rodape from "../../components/Rodape";
 
 import '../../css/global.css';
-import Produto_Exibir from "../../components/Produto_Exibir";
 import api from "../../api";
 import { useEffect, useState } from "react";
 
@@ -23,9 +22,6 @@ export default function Home() {
                     </div>
                     <div class='produtosExibir'>
                         <h2>Nossos produtos:</h2>
-                        {produto && produto.map((produtos) => (
-                            <Produto_Exibir imagem={''} nomeProd={produtos.nome} preco={produtos.preco} />
-                        ))}
 
                     </div>
                 </div>

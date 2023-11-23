@@ -3,34 +3,32 @@ import { Link } from 'react-router-dom';
 
 import balaoMensagem from '../../assets/image/balaoMensagem.svg';
 import carrinhoPixel from '../../assets/image/carrinhoPixel.svg';
-import categoria from '../../assets/image/categoria.svg';
 import devWearLogo from '../../assets/image/devWearLogo.svg';
 import lupaPixel from '../../assets/image/lupaPixel.svg';
 import pessoaPixel from '../../assets/image/pessoaPixel.svg';
-import seta from '../../assets/image/seta.svg';
 
 import '../../css/global.css';
 
 export default function Cabecalho2(){
     return(
-        <section className='Comp-Cabecalho2-Estilo'>
+        <section className='cabecalho2Estilos'>
             <header>
-                <div class="faixa1">
-                    <div class="toolsUsuario">
-                        <div class="logoImg">
+                <div className="faixa1">
+                    <div className="toolsUsuario">
+                        <div className="logoImg">
                             <Link to="/"><img src={devWearLogo}
                                 alt="Logo da marca DevWear" /></Link>
                         </div>
-                        <div class='ferramentas'>
-                        <div class="barraDePesquisa">
+                        <div className='ferramentas'>
+                        <div className="barraDePesquisa">
                             <input type="text" name="pesquisa" placeholder="Pesquisar"></input>
                             <button><img src={lupaPixel} alt="Lupa clique para pesquisar" /></button>
                         </div>
-                        <div class="contato">
-                            <button>
+                        <div className="contato">
+                            <Link to="/">
                                 <img src={balaoMensagem} alt="Balão de contato em arte pixelada" />
                                 <h1>Contato</h1>
-                            </button>
+                            </Link>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="3" height="36" viewBox="0 0 3 36" fill="none">
                             <rect x="1" width="1" height="36" fill="white" />
@@ -38,7 +36,7 @@ export default function Cabecalho2(){
                             <rect y="1" width="3" height="34" fill="white" />
                             <rect y="1" width="3" height="34" fill="white" />
                         </svg>
-                        <div class="contaUsuario">
+                        <div className="contaUsuario">
                             <Link to="/login">
                                 <img src={pessoaPixel}
                                     alt="Pessoa representando o usuário em arte pixelada" /><h1>Minha Conta</h1>
@@ -50,7 +48,7 @@ export default function Cabecalho2(){
                             <rect y="1" width="3" height="34" fill="white" />
                             <rect y="1" width="3" height="34" fill="white" />
                         </svg>
-                        <div class="carrinho">
+                        <div className="carrinho">
                             <button>
                                 <img src={carrinhoPixel}
                                     alt="Carrinho de compra em arte pixelada" />
@@ -59,7 +57,7 @@ export default function Cabecalho2(){
                         </div>
                         </div>
                     </div>
-                    <div class="barraDePesquisaCelular">
+                    <div className="barraDePesquisaCelular">
                         <input type="text" name="pesquisa" placeholder="Pesquisar"></input>
                         <button><img src={lupaPixel} alt="Lupa clique para pesquisar" /></button>
                     </div>
@@ -67,10 +65,10 @@ export default function Cabecalho2(){
             </header>
 
             <nav>
-                <div class="navConteudo">
-                    <div class="paginaInicial">
+                <div className="navConteudo">
+                    <div className="paginaInicial">
 
-                        <Link to="/menuadm"><svg width="35" height="35" viewBox="0 0 35 35" fill="none"
+                        <Link to="/menu"><svg width="35" height="35" viewBox="0 0 35 35" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M7.91667 28.3333H12.2917V19.5833H21.0417V28.3333H25.4167V15.2083L16.6667 8.64583L7.91667 15.2083V28.3333ZM5 31.25V13.75L16.6667 5L28.3333 13.75V31.25H18.125V22.5H15.2083V31.25H5Z"
@@ -78,13 +76,13 @@ export default function Cabecalho2(){
                         </svg>
                             Pagina incial</Link>
                     </div>
-                    <svg class='barra' xmlns="http://www.w3.org/2000/svg" width="2" height="36" viewBox="0 0 3 36" fill="#898989">
+                    <svg className='barra' xmlns="http://www.w3.org/2000/svg" width="2" height="36" viewBox="0 0 3 36" fill="#898989">
                         <rect x="1" width="1" height="36" fill="898989" />
                         <rect x="1" width="1" height="36" fill="898989" />
                         <rect y="1" width="3" height="34" fill="898989" />
                         <rect y="1" width="3" height="34" fill="898989" />
                     </svg>
-                    <div class="produto">
+                    <div className="produto">
                         <Link to="/produtos"><svg width="35" height="35" viewBox="0 0 35 35" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_57_283)">
@@ -100,13 +98,13 @@ export default function Cabecalho2(){
                         </svg>
                             Produtos</Link>
                     </div>
-                    <svg class='barra' xmlns="http://www.w3.org/2000/svg" width="2" height="36" viewBox="0 0 3 36" fill="#898989">
+                    <svg className='barra' xmlns="http://www.w3.org/2000/svg" width="2" height="36" viewBox="0 0 3 36" fill="#898989">
                         <rect x="1" width="1" height="36" fill="898989" />
                         <rect x="1" width="1" height="36" fill="898989" />
                         <rect y="1" width="3" height="34" fill="898989" />
                         <rect y="1" width="3" height="34" fill="898989" />
                     </svg>
-                    <div class="gerenUsuario">
+                    <div className="gerenUsuario">
                         <Link to="/gerenciamentousuario"><svg width="30" height="35" viewBox="0 0 30 35"
                             fill="898989" xmlns="http://www.w3.org/2000/svg">
                             <path

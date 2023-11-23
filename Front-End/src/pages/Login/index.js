@@ -32,45 +32,47 @@ export default function Login() {
         }
     };
 
+
     const login = async () => {
         try {
-
             const json = {
                 email: email,
                 senha: senha
-            }
-
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0aGlua3NoYXJlYXBpIiwic3ViIjoidHVsaW9AZ21haWwuY29tIiwiZXhwIjoxNzAwNTEzMTM5LCJwcml2aWxlZ2lvIjoiQURNSU4iLCJ1c3VhcmlvSWQiOiJkZjczMDVkZC0yODJlLTRlZGQtYmE2Ny1hNzE0MTc4MWIxOGYifQ.TyRBIAE_UfJToAGNM2KfL2oPpnV_-Z9gINhQ1C7WaBs';
-
-            /* =============== AQUI =============== */
-
-            const r = await fetch('http://localhost:8080/auth/login', {
+            };
+    
+            const response = await fetch('http://localhost:8080/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json'
                 },
                 body: JSON.stringify(json),
-            }).then(async response => {
-                console.log(await response.json());
-            }).catch(error => console.error(error));
-
-            /* ==================================== */
-
-            const data = await r.json();
-
-            if (r && r.data && r.data.nome && r.data.cpf && r.data.email && r.data.privilegio) {
-                const { nome, cpf, email, privilegio } = r.data;
-                console.log({ nome, cpf, email, privilegio });
-                navigate('/menuadm', { state: { nome, cpf, email, privilegio } });
+            });
+    
+            const responseData = await response.json();
+    
+            console.log(responseData);
+    
+            if (response.status === 200) {
+                const data = responseData.data;
+                console.log(response.status);
+                console.log(data);
+                setTexto("Login efetuado com sucesso!")
+                mostrarModal()
+                setTimeout(() => {
+                    navigate('/menuadm');
+                }, 1000);
             } else {
-                setTexto('O usuário não existe!');
+                setTexto(responseData.error || 'Ocorreu um erro ao realizar login.');
                 mostrarModal();
             }
         } catch (error) {
+            console.error(error);
             setTexto('Ocorreu um erro ao realizar login.');
             mostrarModal();
         }
     };
+    
+
 
     const enviar = (e) => {
         e.preventDefault();

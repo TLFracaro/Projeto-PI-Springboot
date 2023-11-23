@@ -1,4 +1,4 @@
-.Comp-Cabecalho2-Estilo {
+.cabecalho2Estilos {
     * {
         margin: 0px;
         box-sizing: border-box;
@@ -96,7 +96,7 @@
                     justify-content: space-between;
 
                     .contato {
-                        button {
+                        a {
                             display: flex;
                             align-items: center;
                             text-decoration: none;
@@ -138,6 +138,9 @@
                                 font-family: retroFont;
                                 font-size: 12px;
                             }
+                        }
+                        .caixa{
+                            
                         }
                     }
 
@@ -346,7 +349,7 @@
                     }
     
                     .contato {
-                        button {
+                        a {
     
                             img {}
     
@@ -473,7 +476,7 @@
                     }
     
                     .contato {
-                        button {
+                        a {
     
                             img {}
     

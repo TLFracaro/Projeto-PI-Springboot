@@ -48,29 +48,9 @@ export default function Cadastro() {
         const senhasSaoIguais = validarSenhas(senha, confSenha);
         const emailsSaoIguaisEValidos = email === confEmail && emailValido;
 
-        console.log("CPF:", cpfNumeros.length);
-        console.log("Email válido:", emailValido);
-        console.log("Senhas são iguais?", senhasSaoIguais);
-        console.log("E-mails são iguais e válidos?", emailsSaoIguaisEValidos);
-
-        if (cpfNumeros.length === 11) {
-            setTexto('Cpf inválido!');
-            mostrarModal();
-        }
-        if (!emailValido) {
-            setTexto('Email inválido!');
-            mostrarModal();
-        }
-        if (!senhasSaoIguais) {
-            setTexto('Senha não coincidem!');
-            mostrarModal();
-        }
-
-        if (cpfNumeros.length === 11 && emailValido && senhasSaoIguais && emailsSaoIguaisEValidos) {
+        if (senhasSaoIguais && emailsSaoIguaisEValidos) {
             try {
                 let privilegio = 'USUARIO';
-
-                console.log(cpfNumeros)
 
                 const json = {
                     nome: nome,
@@ -80,19 +60,32 @@ export default function Cadastro() {
                     privilegio: privilegio
                 }
 
-                /* =============== AQUI =============== */
-
-                const r = await fetch(`http://localhost:8080/auth/registrar`, {
+                const response = await fetch(`http://localhost:8080/auth/registrar`, {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json'
                     },
                     body: JSON.stringify(json),
-                }).then(async response => {
-                    console.log(await response.json());
-                }).catch(error => console.error(error));
+                })
 
-                /* =================================== */
+                const responseData = await response.json();
+
+                console.log(responseData);
+
+                if (response.status === 200) {
+                    const data = responseData.data;
+                    console.log(response.status);
+                    console.log(data);
+                    setTexto("Cadastro efetuado com sucesso!")
+                    mostrarModal()
+                    setTimeout(() => {
+                        navigate('/login');
+                    }, 1000);
+                } else {
+                    setTexto(responseData.error || 'Ocorreu um erro ao realizar login.');
+                    mostrarModal();
+                }
+
 
             } catch (error) {
                 console.error('Erro ao cadastrar usuário:', error);
@@ -100,19 +93,13 @@ export default function Cadastro() {
                 mostrarModal();
             }
         } else {
-            // if (nome === "" || cpf === "" || email === "" || senha === "") {
-            //     setTexto('Preencha todos os campos corretamente!');
-            //     mostrarModal();
-            // } else if (!cpfValdio) {
-            //     setTexto('Cpf inválido!');
-            //     mostrarModal();
-            // } else if (!emailValido) {
-            //     setTexto('Email inválido!');
-            //     mostrarModal();
-            // } else if (!senhasSaoIguais) {
-            //     setTexto('Senha não coincidem!');
-            //     mostrarModal();
-            // }
+            if (!emailsSaoIguaisEValidos) {
+                setTexto('Email não coincidem!');
+                mostrarModal();
+            } else if (!senhasSaoIguais) {
+                setTexto('Senha não coincidem!');
+                mostrarModal();
+            }
         }
     };
 
@@ -221,5 +208,5 @@ export default function Cadastro() {
 
         </section>
     );
-    
+
 }

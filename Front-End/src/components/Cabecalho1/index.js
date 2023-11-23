@@ -14,67 +14,67 @@ import '../../css/global.css';
 
 export default function Cabecalho1() {
     return (
-        <section className='Comp-Cabecalho1-Estilo'>
+        <section className='cabecalho1Estilo'>
             <header>
-                <div class="faixa1">
-                    <div class="toolsUsuario">
-                        <div class="logoImg">
+                <div className="faixa1">
+                    <div className="toolsUsuario">
+                        <div className="logoImg">
                             <Link to="/"><img src={devWearLogo}
                                 alt="Logo da marca DevWear" /></Link>
                         </div>
-                        <div class='ferramentas'>
-                        <div class="barraDePesquisa">
-                            <input type="text" name="pesquisa" placeholder="Pesquisar"></input>
-                            <button><img src={lupaPixel} alt="Lupa clique para pesquisar" /></button>
-                        </div>
-                        <div class="contato">
-                            <button>
-                                <img src={balaoMensagem} alt="Balão de contato em arte pixelada" />
-                                <h1>Contato</h1>
-                            </button>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="3" height="36" viewBox="0 0 3 36" fill="none">
-                            <rect x="1" width="1" height="36" fill="white" />
-                            <rect x="1" width="1" height="36" fill="white" />
-                            <rect y="1" width="3" height="34" fill="white" />
-                            <rect y="1" width="3" height="34" fill="white" />
-                        </svg>
-                        <div class="contaUsuario">
-                            <Link to="/login">
-                                <img src={pessoaPixel}
-                                    alt="Pessoa representando o usuário em arte pixelada" /><h1>Minha Conta</h1>
-                            </Link>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="3" height="36" viewBox="0 0 3 36" fill="none">
-                            <rect x="1" width="1" height="36" fill="white" />
-                            <rect x="1" width="1" height="36" fill="white" />
-                            <rect y="1" width="3" height="34" fill="white" />
-                            <rect y="1" width="3" height="34" fill="white" />
-                        </svg>
-                        <div class="carrinho">
-                            <button>
-                                <img src={carrinhoPixel}
-                                    alt="Carrinho de compra em arte pixelada" />
-                                <h1>Carrinho</h1>
-                            </button>
-                        </div>
+                        <div className='ferramentas'>
+                            <div className="barraDePesquisa">
+                                <input type="text" name="pesquisa" placeholder="Pesquisar"></input>
+                                <button><img src={lupaPixel} alt="Lupa clique para pesquisar" /></button>
+                            </div>
+                            <div className="contato">
+                                <button>
+                                    <img src={balaoMensagem} alt="Balão de contato em arte pixelada" />
+                                    <h1>Contato</h1>
+                                </button>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="3" height="36" viewBox="0 0 3 36" fill="none">
+                                <rect x="1" width="1" height="36" fill="white" />
+                                <rect x="1" width="1" height="36" fill="white" />
+                                <rect y="1" width="3" height="34" fill="white" />
+                                <rect y="1" width="3" height="34" fill="white" />
+                            </svg>
+                            <div className="contaUsuario">
+                                <Link to="/login">
+                                    <img src={pessoaPixel} alt="Pessoa representando o usuário em arte pixelada" />
+                                    <h1>Minha Conta</h1>
+                                </Link>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="3" height="36" viewBox="0 0 3 36" fill="none">
+                                <rect x="1" width="1" height="36" fill="white" />
+                                <rect x="1" width="1" height="36" fill="white" />
+                                <rect y="1" width="3" height="34" fill="white" />
+                                <rect y="1" width="3" height="34" fill="white" />
+                            </svg>
+                            <div className="carrinho">
+                                <button>
+                                    <img src={carrinhoPixel}
+                                        alt="Carrinho de compra em arte pixelada" />
+                                    <h1>Carrinho</h1>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="barraDePesquisaCelular">
+                    <div className="barraDePesquisaCelular">
                         <input type="text" name="pesquisa" placeholder="Pesquisar"></input>
                         <button><img src={lupaPixel} alt="Lupa clique para pesquisar" /></button>
                     </div>
                 </div>
             </header>
             <nav>
-                <div class="navegacaoCategoria">
-                    <div class="maisCategorias">
+                <div className="navegacaoCategoria">
+                    <div className="maisCategorias">
                         <button><img src={categoria}
                             alt="Icone de mostrar mais categorias" />categorias</button>
                     </div>
-                    <div class="principal">
+                    <div className="principal">
                         <button>Camisetas
-                            <img class="seta" src={seta}
+                            <img className="seta" src={seta}
                                 alt="Seta para mostrar subcategorias" /></button>
                         <svg xmlns="http://www.w3.org/2000/svg" width="3" height="36" viewBox="0 0 3 36" fill="none">
                             <rect x="1" width="1" height="36" fill="white" />
@@ -84,7 +84,7 @@ export default function Cabecalho1() {
                         </svg>
 
                         <button>Acessorios
-                            <img class="seta" src={seta}
+                            <img className="seta" src={seta}
                                 alt="Seta para mostrar subcategorias" /></button>
                         <svg xmlns="http://www.w3.org/2000/svg" width="3" height="36" viewBox="0 0 3 36" fill="none">
                             <rect x="1" width="1" height="36" fill="white" />
@@ -93,7 +93,7 @@ export default function Cabecalho1() {
                             <rect y="1" width="3" height="34" fill="white" />
                         </svg>
                         <button>Moletom
-                            <img class="seta" src={seta}
+                            <img className="seta" src={seta}
                                 alt="Seta para mostrar subcategorias" /></button>
                         <svg xmlns="http://www.w3.org/2000/svg" width="3" height="36" viewBox="0 0 3 36" fill="none">
                             <rect x="1" width="1" height="36" fill="white" />
@@ -102,7 +102,7 @@ export default function Cabecalho1() {
                             <rect y="1" width="3" height="34" fill="white" />
                         </svg>
                         <button>Calcas
-                            <img class="seta" src={seta}
+                            <img className="seta" src={seta}
                                 alt="Seta para mostrar subcategorias" /></button>
                         <svg xmlns="http://www.w3.org/2000/svg" width="3" height="36" viewBox="0 0 3 36" fill="none">
                             <rect x="1" width="1" height="36" fill="white" />
@@ -111,7 +111,7 @@ export default function Cabecalho1() {
                             <rect y="1" width="3" height="34" fill="white" />
                         </svg>
                         <button>Bermudas
-                            <img class="seta" src={seta}
+                            <img className="seta" src={seta}
                                 alt="Seta para mostrar subcategorias" /></button>
                         <svg xmlns="http://www.w3.org/2000/svg" width="3" height="36" viewBox="0 0 3 36" fill="none">
                             <rect x="1" width="1" height="36" fill="white" />
@@ -120,7 +120,7 @@ export default function Cabecalho1() {
                             <rect y="1" width="3" height="34" fill="white" />
                         </svg>
                         <button>Mais Categorias
-                            <img class="seta" src={seta}
+                            <img className="seta" src={seta}
                                 alt="Seta para mostrar subcategorias" /></button>
                     </div>
                 </div>
