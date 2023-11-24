@@ -5,7 +5,6 @@ import Cabecalho1 from '../../components/Cabecalho1';
 import Rodape from '../../components/Rodape';
 import '../../css/global.css';
 import './index.scss';
-import api from '../../api';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -39,7 +38,7 @@ export default function Login() {
                 email: email,
                 senha: senha
             };
-    
+
             const response = await fetch('http://localhost:8080/auth/login', {
                 method: 'POST',
                 headers: {
@@ -47,23 +46,21 @@ export default function Login() {
                 },
                 body: JSON.stringify(json),
             });
-    
+
             const responseData = await response.json();
-    
+
             console.log(responseData);
-    
-            if (response.status === 200) {
-                const data = responseData.data;
-                console.log(response.status);
-                console.log(data);
-                setTexto("Login efetuado com sucesso!")
-                mostrarModal()
+
+            if (responseData && responseData.token) {
+                localStorage.setItem('token', responseData.token);
+        
+                setTexto("Login efetuado com sucesso!");
+                mostrarModal();
                 setTimeout(() => {
-                    navigate('/menuadm');
+                    navigate('/menu');
                 }, 1000);
             } else {
-                setTexto(responseData.error || 'Ocorreu um erro ao realizar login.');
-                mostrarModal();
+                console.error('Token não encontrado em data:', responseData);
             }
         } catch (error) {
             console.error(error);
@@ -71,7 +68,7 @@ export default function Login() {
             mostrarModal();
         }
     };
-    
+
 
 
     const enviar = (e) => {

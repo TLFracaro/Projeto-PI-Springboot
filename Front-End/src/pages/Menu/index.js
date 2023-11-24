@@ -11,6 +11,11 @@ export default function MenuADM() {
     const location = useLocation();
     const { nome, cpf, email } = location.state || {};
 
+    const token = localStorage.getItem('token');
+    const decodedToken = JSON.parse(atob(token.split('.')[1]));
+
+    console.log(decodedToken);
+
     useEffect(() => {
         localStorage.setItem("userData", JSON.stringify({ nome, cpf, email }));
     }, [nome, cpf, email]);
@@ -20,16 +25,16 @@ export default function MenuADM() {
     useEffect(() => {
         const storedUserDataString = localStorage.getItem("userData");
         if (storedUserDataString) {
-          const parsedUserData = JSON.parse(storedUserDataString);
-          console.log("Dados recuperados:", parsedUserData);
-          setStoredUserData(parsedUserData);
+            const parsedUserData = JSON.parse(storedUserDataString);
+            console.log("Dados recuperados:", parsedUserData);
+            setStoredUserData(parsedUserData);
         }
-      }, []);
+    }, []);
 
     return (
         <section className="MenuAdmEstilo">
 
-            <Cabecalho2 />
+            <Cabecalho2 tipoPrivilegio={decodedToken.privilegio} />
 
             <main>
                 <div className="mainConteudo">
@@ -41,9 +46,8 @@ export default function MenuADM() {
                             <img src={gatoToca} alt="Sua imamgem"></img>
                             <div className="infosUser">
                                 <h3>Dados Usuario:</h3>
-                                <p>Nome: {storedUserData?.nome}</p>
-                                <p>CPF: {storedUserData?.cpf}</p>
-                                <p>E-mail: {storedUserData?.email}</p>
+                                <p>E-mail: {decodedToken.sub}</p>
+                                <p>Usuário: {decodedToken.privilegio}</p>
                             </div>
                         </div>
                         <div className="opcos">

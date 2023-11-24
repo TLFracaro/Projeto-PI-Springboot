@@ -4,7 +4,6 @@ import { Link, useLocation } from "react-router-dom";
 
 import '../../css/global.css';
 import Rodape from "../../components/Rodape";
-import api from "../../api";
 import { useEffect, useState } from "react";
 
 export default function VizualizarProdutos() {

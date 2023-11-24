@@ -1,4 +1,3 @@
-//alterei aqui
 import "./index.scss";
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -6,7 +5,6 @@ import Cabecalho2 from "../../components/Cabecalho2";
 import axios from 'axios';
 import '../../css/global.css';
 import Rodape from "../../components/Rodape";
-import api from "../../api";
 
 export default function AlterarProduto() {
     const [nomeProduto, setNomeProduto] = useState('');
@@ -17,7 +15,7 @@ export default function AlterarProduto() {
     const [produto_id, setproduto_id] = useState('');
     const [locEstoque, setLocEstoque] = useState('');
     const [peso, setPeso] = useState(0);
-    const [images, setImages] = useState([]);
+    const [imagens, setimagens] = useState([]);
     const [produto, setProduto] = useState([]);
     const [variacoes, setVariacoes] = useState([
         {
@@ -93,11 +91,11 @@ export default function AlterarProduto() {
             setLocEstoque(loc_estoque);
             setPeso(peso);
 
-            setImages(imagens.map(imagem => ({
+            setimagens(imagens.map(imagem => ({
                 imagem_base64: imagem.imagem_base64
             })));
 
-            console.log(images);
+            console.log(imagens);
 
             setVariacoes(() =>
                 variacao.map((variacaoItem) => ({
@@ -140,7 +138,7 @@ export default function AlterarProduto() {
                 formData.append(`variacoes[${index}][quantidade]`, variacao.quantidade);
             });
 
-            images.forEach((image, index) => {
+            imagens.forEach((image, index) => {
                 if (image) {
                     console.log("Imagem a ser inserida:", { produto_id: produto_idRecebido, imagemBase64: image.imagem_base64 });
                     formData.append(`imagens[${index}]`, image.imagem_base64);
@@ -198,7 +196,7 @@ export default function AlterarProduto() {
             const reader = new FileReader();
             reader.onload = (e) => {
                 console.log('URL da imagem adicionada:', e.target.result);
-                setImages((prevImages) => [...prevImages, { imagem_base64: e.target.result }]);
+                setimagens((previmagens) => [...previmagens, { imagem_base64: e.target.result }]);
             };            
             reader.readAsDataURL(file);
         }
@@ -206,9 +204,9 @@ export default function AlterarProduto() {
 
     function deleteImage(index, e) {
         e.preventDefault();
-        const newImages = [...images];
-        newImages.splice(index, 1);
-        setImages(newImages);
+        const newimagens = [...imagens];
+        newimagens.splice(index, 1);
+        setimagens(newimagens);
     }    
     
     function addVariacao() {
@@ -272,7 +270,7 @@ export default function AlterarProduto() {
                             <input id="marca" type="text" name="marca" value={marca} onChange={(e) => setMarca(e.target.value)}></input>
 
                             <label htmlFor="preco">Preço:*</label>
-                            <input id="preco" type="number" name="preco" min="0" value={preco} onChange={(e) => setPreco(e.target.value)}></input>
+                            <input id="preco"type="text" name="preco"value={preco}onChange={(e) => {const inputPrice = e.target.value.replace(/[^0-9.]/g, '');setPreco(inputPrice);}}/>
 
                             <label htmlFor="descricao">Descrição:*</label>
                             <input id="descricao" type="text" name="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)}></input>
@@ -290,7 +288,7 @@ export default function AlterarProduto() {
                             <div className="imagemProd">
                                 <input type="file" id="imageInput" accept="image/*" multiple onChange={addImage} />
                                 <div id="imageContainer">
-                                    {images.map((image, index) => (
+                                    {imagens.map((image, index) => (
                                         <div key={index} className="image-item">
                                             <img src={image.imagem_base64} alt={`Imagem ${index}`} />
                                             <button type="button" onClick={(e) => deleteImage(index, e)}><svg width="40" height="40" viewBox="0 0 40 40" fill="none"

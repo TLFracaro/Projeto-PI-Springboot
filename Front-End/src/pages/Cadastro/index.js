@@ -6,9 +6,6 @@ import Rodape from '../../components/Rodape';
 import { useNavigate } from 'react-router-dom'
 import '../../css/global.css';
 import { useEffect, useRef, useState, } from 'react';
-import axios from 'axios';
-import api from '../../api';
-
 
 export default function Cadastro() {
 

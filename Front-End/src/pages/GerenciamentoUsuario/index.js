@@ -4,8 +4,6 @@ import Cabecalho2 from "../../components/Cabecalho2";
 import '../../css/global.css';
 import Rodape from "../../components/Rodape";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import api from "../../api";
 
 export default function GerenciamentoUsuario() {
     const [usuarios, setUsuarios] = useState([]);
@@ -23,15 +21,23 @@ export default function GerenciamentoUsuario() {
         caixaDeDialogo.showModal();
     };
 
+    const token = localStorage.getItem('token');
+
     async function listarUsuarios() {
-        const r = await fetch(`http://localhost:8080/usuario/listar/`, {
+        const response = await fetch(`http://localhost:8080/usuario/listar/`, {
             method: 'GET',
-            headers: {
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiVVNVQVJJTyIsIklzc3VlciI6ImVjb21tZXJjZSIsIlVzZXJuYW1lIjoidGVzdGUiLCJleHAiOjE2OTk5MDk5OTcsImlhdCI6MTY5OTkwOTk5N30.Ua4Hk1F5PulvwqlsZkja48PMO0NTbkUXp_xfYELka74'
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+        
+            if (!response.ok) {
+                throw new Error(`Erro ao carregar usuarios: ${response.status}`);
             }
-        });
-        let usuarios = r.data;
-        setUsuarios(usuarios);
+        
+            const usuarios = await response.json();
+        
+            setUsuarios(usuarios);
     }
 
     const filtrarUsuarios = () => {

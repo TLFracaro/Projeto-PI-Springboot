@@ -7,7 +7,6 @@ import '../../css/global.css';
 import Rodape from "../../components/Rodape";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import api from "../../api";
 
 export default function Produtos() {
     const [produtos, setProdutos] = useState([]);
@@ -23,7 +22,7 @@ export default function Produtos() {
         caixaDeDialogo.current = document.getElementById("CaixaDeDialogo");
     }, []);
 
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJlY29tbWVyY2UiLCJzdWIiOiJ0ZXN0ZUBnbWFpbC5jb20iLCJleHAiOjE3MDAyODE2OTIsInByaXZpbGVnaW8iOiJBRE1JTiIsInVzdWFyaW9JZCI6ImIxNzM5NTg2LWFjYjgtNDFkNy05N2I0LWUzYjBlNzM4MDliMyJ9.n5-R0FudvbrAL0sjnEjoyIebNOkZwhUE9TQMuQcxNbk';
+    const token = localStorage.getItem('token');
 
     const openConfirmation = (produto) => {
         setProdutoToDelete(produto);
@@ -87,28 +86,31 @@ export default function Produtos() {
     }
 
     async function alterarproduto(produto) {
-        navigate("/alterarproduto/", { state: produto.produto_id });
+        navigate("/alterarproduto", { state: produto.produto_id });
     }
 
     async function listarProduto() {
 
         /* =============== AQUI =============== */
 
-        const r = await fetch('http://localhost:8080/produto/todos', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-        }).then(async response => {
-            console.log(await response.json());
-        }).catch(error => console.error(error));
-
-        // const produtos = await r.json();
-
-        /* ==================================== */
-
-
-        setProdutos(produtos);
+        try {
+            const response = await fetch('http://localhost:8080/produto/todos', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+        
+            if (!response.ok) {
+                throw new Error(`Erro ao carregar produtos: ${response.status}`);
+            }
+        
+            const produtos = await response.json();
+        
+            setProdutos(produtos);
+        } catch (error) {
+            console.error('Erro ao carregar produtos:', error);
+        }
     }
 
     const filtrarProdutos = () => {

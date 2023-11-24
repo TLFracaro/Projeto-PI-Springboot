@@ -4,7 +4,6 @@ import Cabecalho1 from "../../components/Cabecalho1";
 import Rodape from "../../components/Rodape";
 
 import '../../css/global.css';
-import api from "../../api";
 import { useEffect, useState } from "react";
 
 export default function Home() {

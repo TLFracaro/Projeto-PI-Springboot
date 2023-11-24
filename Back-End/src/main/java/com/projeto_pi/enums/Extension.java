@@ -18,5 +18,4 @@ public enum Extension {
     Extension(byte[] magicNumber) {
         this.magicNumber = magicNumber;
     }
-
 }
