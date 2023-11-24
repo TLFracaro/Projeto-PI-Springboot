@@ -1,4 +1,3 @@
-//alterei aqui
 import "./index.scss";
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
@@ -7,6 +6,7 @@ import '../../css/global.css';
 import Rodape from "../../components/Rodape";
 
 export default function CadastroDeProdutos() {
+    const [produto, setProduto] = useState('');
     const [nomeProduto, setNomeProduto] = useState('');
     const [categoria, setCategoria] = useState('');
     const [marca, setMarca] = useState('');
@@ -46,16 +46,9 @@ export default function CadastroDeProdutos() {
     };
 
     async function enviar(e) {
-        if (
-            !nomeProduto ||
-            !categoria ||
-            !marca ||
-            !preco ||
-            !descricao ||
-            !locEstoque ||
-            !peso ||
-            variacoes.length === 0
-        ) {
+        e.preventDefault();
+    
+        if (!nomeProduto || !categoria || !marca || !preco || !descricao || !locEstoque || !peso || variacoes.length === 0) {
             setTexto('Preencha todos os campos obrigatórios antes de enviar.');
             mostrarModal();
             return;
@@ -76,66 +69,55 @@ export default function CadastroDeProdutos() {
             })),
         };
     
-        const formData = new FormData();
-    
-        variacoes.forEach((variacao, index) => {
-            formData.append(`variacoes[${index}][tamanho]`, variacao.tamanho);
-            formData.append(`variacoes[${index}][cor]`, variacao.cor);
-            formData.append(`variacoes[${index}][quantidade]`, variacao.quantidade);
+        const body = new FormData();
+        body.append('json', JSON.stringify(requestData));
+        
+        imagens.forEach((imagem) => {
+            body.append('imagens', imagem);
         });
     
-        imagens.forEach((image, index) => {
-            if (image) {
-                formData.append(`imagens[${index}]`, image);
-            }
-        });
-    
-        formData.append('json', JSON.stringify(requestData));
-    
-        const response = await fetch(`http://localhost:8080/produto`, {
+        const response = await fetch('http://localhost:8080/produto', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
-            body: formData,
+            body: body,
         });
     
         const responseData = await response.json();
     
         console.log(responseData);
     
-        if (response.status === 200) {
+        if (response.ok) {
             const data = responseData.data;
             console.log(response.status);
             console.log(data);
             setTexto('Produto cadastrado com sucesso!');
             mostrarModal();
             setTimeout(() => {
-                navigate('/menu');
+                navigate('/produtos');
             }, 1000);
         } else {
-            setTexto(responseData.error || 'Ocorreu um erro ao realizar login.');
+            setTexto(responseData.error || 'Ocorreu um erro ao realizar o cadastro do produto.');
             mostrarModal();
         }
     }
     
-
     function addImage(event) {
         const selectedFiles = event.target.files;
-    
+
         for (let i = 0; i < selectedFiles.length; i++) {
             const file = selectedFiles[i];
-    
+
             const reader = new FileReader();
-    
+
             reader.onloadend = () => {
-                setimagens((previmagens) => [...previmagens, reader.result]);
+                setimagens((previmagens) => [...previmagens, file]);
             };
-    
+
             reader.readAsDataURL(file);
         }
     }
-
 
     function deleteImage(index) {
         const newimagens = [...imagens];
@@ -144,7 +126,10 @@ export default function CadastroDeProdutos() {
     }
 
     function addVariacao() {
-        setVariacoes([...variacoes, { tamanho: '', cor: '', quantidade: '' }]);
+        setProduto((prevProduto) => {
+            const novasVariacoes = [...prevProduto.variacoes, { tamanho: '', cor: '', quantidade: 0 }];
+            return { ...prevProduto, variacoes: novasVariacoes };
+        });
     }
 
     function handleVariacaoChange(index, event) {
@@ -155,11 +140,12 @@ export default function CadastroDeProdutos() {
     }
 
     function deleteVariacao(index) {
-        const updatedVariacoes = [...variacoes];
-        updatedVariacoes.splice(index, 1);
-        setVariacoes(updatedVariacoes);
+        setProduto((prevProduto) => {
+            const novasVariacoes = [...prevProduto.variacoes];
+            novasVariacoes.splice(index, 1);
+            return { ...prevProduto, variacoes: novasVariacoes };
+        });
     }
-
     function addVariacao(e) {
         e.preventDefault();
         setVariacoes([...variacoes, { tamanho: '', cor: '', quantidade: '' }]);
@@ -232,7 +218,7 @@ export default function CadastroDeProdutos() {
                                 <div id="imageContainer">
                                     {imagens.map((image, index) => (
                                         <div key={index} className="image-item">
-                                            <img src={image.imagem_base64} alt={`Imagem ${index}`} />
+                                            <img src={URL.createObjectURL(image)} alt={`Imagem ${index}`} />
                                             <button type="button" onClick={(e) => deleteImage(index, e)}><svg width="40" height="40" viewBox="0 0 40 40" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <path

@@ -36,7 +36,7 @@ public class Produto {
     private String descricao;
 
     @Column(name = "loc_estoque")
-    private String iocEstoque;
+    private String locEstoque;
 
     @Column(name = "peso", nullable = false, precision = 10, scale = 2)
     private BigDecimal peso;

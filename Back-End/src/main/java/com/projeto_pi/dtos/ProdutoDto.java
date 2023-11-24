@@ -20,14 +20,15 @@ public record ProdutoDto(
 
         @NotNull(message = "O campo preço deve ser informado")
         @Digits(integer = 10, fraction = 2, message = "Valor máximo de 10 dígitos e 2 casas decimais")
+        
         @Positive(message = "O valor deve ser positivo")
         BigDecimal preco,
 
         @NotBlank(message = "O campo descricao deve ser informado")
         String descricao,
 
-        @NotBlank(message = "O campo iocEstoque deve ser informado")
-        String iocEstoque,
+        @NotBlank(message = "O campo loc_estoque deve ser informado")
+        String loc_estoque,
 
         @NotNull(message = "O campo peso deve ser informado")
         @Digits(integer = 10, fraction = 2, message = "Valor máximo de 10 dígitos e 2 casas decimais")

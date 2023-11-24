@@ -23,6 +23,7 @@ export default function Produtos() {
     }, []);
 
     const token = localStorage.getItem('token');
+    const decodedToken = JSON.parse(atob(token.split('.')[1]));
 
     const openConfirmation = (produto) => {
         setProdutoToDelete(produto);
@@ -56,30 +57,37 @@ export default function Produtos() {
 
     async function excluirProduto() {
         if (produtoToDelete) {
+            console.log("Excluindo produto:", produtoToDelete.produtoId);
+
             try {
-
-                /* =============== AQUI =============== */
-
-                const r = await fetch(`http://localhost:8080/produto/${produtoToDelete.produto_id}`, {
+                const r = await fetch(`http://localhost:8080/produto?produtoId=${produtoToDelete.produtoId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },
                 });
 
+                console.log("Resposta:", r);
+
+                if (!(r.status === 200)) {
+                    throw new Error(`Falha ao excluir o produto: ${r.status}`);
+                }
+
                 const produtos = await r.json();
 
-                /* ==================================== */
+                console.log("Produto excluído:", produtos);
 
                 listarProduto();
                 closeConfirmation();
             } catch (error) {
-                console.error('Erro ao excluir produto:', error);
+                console.error('Erro ao excluir o produto:', error);
                 setTexto('Ocorreu um erro ao excluir o produto!');
                 mostrarModal();
             }
         }
     }
+
+
 
     async function vizualizarproduto(produto) {
         navigate("/vizualizarprodutos", { state: produto.produto_id });
@@ -91,8 +99,6 @@ export default function Produtos() {
 
     async function listarProduto() {
 
-        /* =============== AQUI =============== */
-
         try {
             const response = await fetch('http://localhost:8080/produto/todos', {
                 method: 'GET',
@@ -100,13 +106,13 @@ export default function Produtos() {
                     'Authorization': `Bearer ${token}`
                 },
             });
-        
+
             if (!response.ok) {
                 throw new Error(`Erro ao carregar produtos: ${response.status}`);
             }
-        
+
             const produtos = await response.json();
-        
+
             setProdutos(produtos);
         } catch (error) {
             console.error('Erro ao carregar produtos:', error);
@@ -129,7 +135,7 @@ export default function Produtos() {
     return (
         <section className="ProdutoEstilo">
 
-            <Cabecalho2 />
+            <Cabecalho2 tipoPrivilegio={decodedToken.privilegio} />
 
             <main>
                 <div class="mainConteudo">
