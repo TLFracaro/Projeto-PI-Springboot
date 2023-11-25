@@ -21,7 +21,6 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            max-width: 900px;
             height: 100%;
             background-color: #E5E5E5;
             border-radius: 50px;
@@ -49,7 +48,7 @@
                     }
                 }
             }
-            
+
             dialog {
                 overflow-x: hidden;
                 overflow-y: hidden;
@@ -65,7 +64,6 @@
                 border-radius: 20px;
                 max-width: 80%;
                 max-height: 80%;
-                min-width: 400px;
                 font-size: 18px;
                 text-align: center;
                 z-index: 2;
@@ -110,6 +108,8 @@
                     justify-content: center;
                     flex-direction: column;
                     margin-bottom: 20px;
+                    width: 100%;
+                    max-width: 800px;
 
                     label {
                         align-self: flex-start;
@@ -125,7 +125,6 @@
                         justify-content: center;
                         flex-direction: column;
                         width: 100%;
-
                         outline: none;
                         border-radius: 20px;
                         height: 50px;
@@ -174,10 +173,10 @@
                                 position: absolute;
                                 max-width: 60px;
                                 max-height: 60px;
-
+                                background-color: transparent;
                                 color: #ffffff;
                                 border: none;
-                                background-color: transparent;
+
                                 cursor: pointer;
                             }
 
@@ -283,7 +282,7 @@
                         cursor: pointer;
                         margin: 0px;
 
-                        
+
                         svg {
                             margin-right: 10px;
                             margin-left: 10px;
@@ -324,6 +323,7 @@
         width: 200px;
         cursor: pointer;
     }
+
     @media screen and (max-width: 430px) {
         main {
             padding: 20px;

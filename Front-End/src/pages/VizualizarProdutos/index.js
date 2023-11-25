@@ -8,56 +8,59 @@ import { useEffect, useState } from "react";
 
 export default function VizualizarProdutos() {
     const location = useLocation();
-    const produto_id = location.state || {};
+    const produtoId = location.state || {};
     const [produto, setProduto] = useState({});
-    const [imagensBase64, setImagemBase64] = useState([]);
+    const [imagensUrl, setImagensUrl] = useState([]);
 
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJlY29tbWVyY2UiLCJzdWIiOiJ0ZXN0ZUBnbWFpbC5jb20iLCJleHAiOjE3MDAyODE2OTIsInByaXZpbGVnaW8iOiJBRE1JTiIsInVzdWFyaW9JZCI6ImIxNzM5NTg2LWFjYjgtNDFkNy05N2I0LWUzYjBlNzM4MDliMyJ9.n5-R0FudvbrAL0sjnEjoyIebNOkZwhUE9TQMuQcxNbk';
+    const token = localStorage.getItem('token');
+    const decodedToken = JSON.parse(atob(token.split('.')[1]));
 
     useEffect(() => {
         async function fetchData() {
             try {
-
-                /* =============== AQUI =============== */
-
-                const r = await fetch(`http://localhost:8080/produto?produtoId=${produto_id}`, {
+                const response = await fetch(`http://localhost:8080/produto?produtoId=${produtoId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },
                 });
 
-                /* ==================================== */
+                const responseData = await response.json();
 
-                setProduto(r.data);
+                const imagens = responseData.imagens;
 
-                const imagensBase64 = r.data.imagens.map((imagem) => {
-                    return imagem.imagem_base64;
+                console.log('Dados do Produto:', responseData);
+                console.log('Imagens:', imagens);
+
+                setProduto(responseData);
+
+                const imagensUrl = imagens.map((imagem) => {
+                    return imagem.url;
                 });
 
-                console.log('Dados do Produto:', r.data);
-                console.log('Imagens Base64:', imagensBase64);
-
-                setImagemBase64(imagensBase64);
+                setImagensUrl(imagensUrl);
             } catch (error) {
                 console.error(error);
             }
         }
+
         fetchData();
-    }, [produto_id]);
+    }, [produtoId, token]);
+
+
 
     const calcularGrid = () => {
-        const numeroDeImagens = imagensBase64.length;
-        const colunas = numeroDeImagens === 4 ? 2 : 1; 
+        const numeroDeImagens = imagensUrl.length;
+        const colunas = numeroDeImagens === 4 ? 2 : 1;
         const linhas = Math.ceil(numeroDeImagens / colunas);
-    
-        return {
-          gridTemplateColumns: `repeat(${colunas}, 1fr)`,
-          gridTemplateRows: `repeat(${linhas}, 1fr)`,
-        };
-      };
 
-    const dataDeInclusao = new Date(produto.item?.dataDeInclusao);
+        return {
+            gridTemplateColumns: `repeat(${colunas}, 1fr)`,
+            gridTemplateRows: `repeat(${linhas}, 1fr)`,
+        };
+    };
+
+    const dataDeInclusao = new Date(produto.dataDeInclusao);
 
     const addZero = (num) => (num < 10 ? `0${num}` : num);
 
@@ -67,11 +70,10 @@ export default function VizualizarProdutos() {
     const horas = addZero(dataDeInclusao.getHours());
     const minutos = addZero(dataDeInclusao.getMinutes());
 
-    const dataFormatada = `${dia}/${mes}/${ano} ${horas}:${minutos}`;
-
     return (
         <section className="VizualizarProdutoEstilo">
-            <Cabecalho2 />
+            
+            <Cabecalho2 tipoPrivilegio={decodedToken.privilegio} />
 
             <main>
                 <div class="mainConteudo">
@@ -90,31 +92,26 @@ export default function VizualizarProdutos() {
                     <h1 id="titulo">• Informações do produto:</h1>
                     <div class="conteudo">
                         <div className="imagens" style={calcularGrid()}>
-                            {imagensBase64.map((imagemBase64, index) => (
+                            {imagensUrl.map((imagem, index) => (
                                 <div key={index}>
-                                    {imagemBase64 && imagemBase64.toLowerCase().includes('image/png') ? (
-                                        <img
-                                            src={imagemBase64}
-                                            alt={`Imagem ${index + 1}`}
-                                            style={{ objectFit: 'cover' }}
-                                        />
-                                    ) : (
-                                        <p>Imagem não suportada</p>
-                                    )}
+                                    <img
+                                        src={imagem}
+                                        alt={`Imagem ${index + 1}`}
+                                        style={{ objectFit: 'cover' }}
+                                    />
                                 </div>
                             ))}
                         </div>
 
                         <div class="infos">
                             <div>
-                                <h4>Nome:⠀<p>{produto.item?.nome}</p></h4>
+                                <h4>Nome:⠀<p>{produto.nome}</p></h4>
                             </div>
-                            <h4>Categoria:⠀<p>{produto.item?.categoria}</p></h4>
-                            <h4>Marca:⠀<p>{produto.item?.marca}</p></h4>
-                            <h4>Preço:⠀<p>{produto.item?.preco}</p></h4>
-                            <h4>Descrição do produto:⠀<p>{produto.item?.descricao}</p></h4>
-                            <h4>Localização no estoque:⠀<p>{produto.item?.loc_estoque}</p></h4>
-                            <h4>Data de inclusão:⠀<p>{dataFormatada}</p></h4>
+                            <h4>Categoria:⠀<p>{produto.categoria}</p></h4>
+                            <h4>Marca:⠀<p>{produto.marca}</p></h4>
+                            <h4>Preço:⠀<p>{produto.preco}</p></h4>
+                            <h4>Descrição do produto:⠀<p>{produto.descricao}</p></h4>
+                            <h4>Localização no estoque:⠀<p>{produto.loc_estoque}</p></h4>
                             <div class="variacoes">
                                 <h4>Variações:</h4>
                                 <table>
@@ -123,8 +120,8 @@ export default function VizualizarProdutos() {
                                         <th>Cor</th>
                                         <th>Quantidade</th>
                                     </tr>
-                                    {produto.variacao?.map((variacao) => (
-                                        <tr class='Conteudo'>
+                                    {produto.variacoes?.map((variacao) => (
+                                        <tr class='Conteudo' key={variacao.variacaoId}>
                                             <td class="primeiro">Tamanho: {variacao.tamanho}</td>
                                             <td>Cor: {variacao.cor}</td>
                                             <td class="final">Quantidade: {variacao.quantidade}</td>

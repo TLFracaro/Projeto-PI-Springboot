@@ -18,5 +18,5 @@ public record VariacaoDto(
         @Max(value = Integer.MAX_VALUE, message = "O valor máximo foi atingido")
         Integer quantidade
 ) {
-
+        
 }

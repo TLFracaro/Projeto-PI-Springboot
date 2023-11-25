@@ -11,9 +11,9 @@ import Login from './pages/Login/index.js';
 import Alterar from './pages/AlterarProduto/index.js';
 
 export default function Rotas() {
-    const token = localStorage.getItem('token');
-    const decodedToken = JSON.parse(atob(token.split('.')[1]));
-    const privilegio = decodedToken.privilegio;
+    // const token = localStorage.getItem('token');
+    // const decodedToken = JSON.parse(atob(token.split('.')[1]));
+    // const privilegio = decodedToken.privilegio;
 
     return(
         <BrowserRouter>

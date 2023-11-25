@@ -38,29 +38,34 @@ export default function Login() {
                 email: email,
                 senha: senha
             };
-
-            const response = await fetch('http://localhost:8080/auth/login', {
+    
+            let response = await fetch('http://localhost:8080/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json'
                 },
                 body: JSON.stringify(json),
             });
-
-            const responseData = await response.json();
-
+    
+            let responseData = await response.json();
+    
             console.log(responseData);
-
-            if (responseData && responseData.token) {
+    
+            if (response.ok) {
                 localStorage.setItem('token', responseData.token);
-        
+    
                 setTexto("Login efetuado com sucesso!");
                 mostrarModal();
                 setTimeout(() => {
                     navigate('/menu');
                 }, 1000);
             } else {
-                console.error('Token não encontrado em data:', responseData);
+                if (responseData.error) {
+                    setTexto(responseData.error);
+                } else {
+                    setTexto('Ocorreu um erro ao realizar login.');
+                }
+                mostrarModal();
             }
         } catch (error) {
             console.error(error);
@@ -68,6 +73,7 @@ export default function Login() {
             mostrarModal();
         }
     };
+    
 
 
 

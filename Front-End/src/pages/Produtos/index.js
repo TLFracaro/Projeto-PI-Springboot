@@ -90,11 +90,11 @@ export default function Produtos() {
 
 
     async function vizualizarproduto(produto) {
-        navigate("/vizualizarprodutos", { state: produto.produto_id });
+        navigate("/vizualizarprodutos", { state: produto.produtoId });
     }
 
     async function alterarproduto(produto) {
-        navigate("/alterarproduto", { state: produto.produto_id });
+        navigate("/alterarproduto", { state: produto.produtoId });
     }
 
     async function listarProduto() {
