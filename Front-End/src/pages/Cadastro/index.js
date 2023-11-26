@@ -77,7 +77,7 @@ export default function Cadastro() {
                     mostrarModal()
                     setTimeout(() => {
                         navigate('/login');
-                    }, 1000);
+                    }, 2000);
                 } else {
                     setTexto(responseData.error || 'Ocorreu um erro ao realizar login.');
                     mostrarModal();

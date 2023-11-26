@@ -58,7 +58,7 @@ export default function Login() {
                 mostrarModal();
                 setTimeout(() => {
                     navigate('/menu');
-                }, 1000);
+                }, 2000);
             } else {
                 if (responseData.error) {
                     setTexto(responseData.error);

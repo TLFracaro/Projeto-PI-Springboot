@@ -11,7 +11,9 @@ import Login from './pages/Login/index.js';
 import Alterar from './pages/AlterarProduto/index.js';
 
 export default function Rotas() {
-    const isUserAdmin = () => {
+    
+
+    const isUserAdmin = () => { 
         const token = localStorage.getItem('token');
         if (token) {
             const decodedToken = JSON.parse(atob(token.split('.')[1]));
@@ -20,8 +22,17 @@ export default function Rotas() {
         }
         return false;
     };
+
     const AdminRoute = ({ children }) => {
         if (!isUserAdmin()) {
+            return <Navigate to="/login" />;
+        }
+        return children;
+    };
+
+    const PrivateRoute = ({ children }) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
             return <Navigate to="/login" />;
         }
         return children;
@@ -35,7 +46,7 @@ export default function Rotas() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastrodeprodutos" element={<AdminRoute><CadastroDeProdutos /></AdminRoute>} />
                 <Route path="/gerenciamentousuario" element={<AdminRoute><GerenciamentoUsuario /></AdminRoute>} />
-                <Route path="/menu" element={<Menu />} />
+                <Route path="/menu" element={<PrivateRoute><Menu /></PrivateRoute>} />
                 <Route path="/produtos" element={<AdminRoute><Produtos /></AdminRoute>} />
                 <Route path="/vizualizarprodutos" element={<AdminRoute><VizualizarProdutos /></AdminRoute>} />
                 <Route path="/alterarproduto" element={<AdminRoute><Alterar /></AdminRoute>} />
