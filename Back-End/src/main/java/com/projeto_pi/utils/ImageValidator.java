@@ -16,7 +16,7 @@ public class ImageValidator implements ConstraintValidator<ValidateImage, Multip
     public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
 
         if (file == null) {
-            return false;
+            return true;
         }
         try (InputStream inputStream = file.getInputStream()) {
 

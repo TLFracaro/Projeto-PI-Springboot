@@ -109,7 +109,7 @@ export default function VizualizarProdutos() {
                             </div>
                             <h4>Categoria:⠀<p>{produto.categoria}</p></h4>
                             <h4>Marca:⠀<p>{produto.marca}</p></h4>
-                            <h4>Preço:⠀<p>{produto.preco}</p></h4>
+                            <h4>Preço:⠀<p>R$ {produto.preco}</p></h4>
                             <h4>Descrição do produto:⠀<p>{produto.descricao}</p></h4>
                             <h4>Localização no estoque:⠀<p>{produto.loc_estoque}</p></h4>
                             <div class="variacoes">

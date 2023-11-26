@@ -37,7 +37,7 @@ public class ImagesService {
                 String value = entry.getValue().asText();
 
                 if (value.equals(hash.get())) {
-                    return entry.getKey();
+                    return "http://localhost:8080/images/" + entry.getKey();
                 }
             }
             return null;
@@ -102,7 +102,8 @@ public class ImagesService {
 
             DigestInputStream dis = new DigestInputStream(image.getInputStream(), md);
 
-            while (dis.read() != -1) ;
+            while (dis.read() != -1)
+                ;
 
             byte[] hashBytes = md.digest();
 
